@@ -7,8 +7,10 @@ class HomePageTest(TestCase):
         response = self.client.get('/')
 
         self.assertEqual(response.status_code, 200)
+        # {% extends 'base.html'%} -- index template is loaded first, and the
+        # base template is loaded second
         self.assertEqual(
-            ['base.html', 'hello/index.html'],
+            ['hello/index.html', 'base.html'],
             [t.name for t in response.templates]
         )
         self.assertContains(response, 'Yevhen')
