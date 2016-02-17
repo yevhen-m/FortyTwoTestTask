@@ -1,9 +1,14 @@
 from django.test import TestCase
 
-# Create your tests here.
 
+class HomePageTest(TestCase):
 
-class SomeTests(TestCase):
-    def test_math(self):
-        "put docstrings in your tests"
-        assert(2 + 2 == 5)
+    def test_home_page(self):
+        response = self.client.get('/')
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(
+            ['base.html', 'hello/index.html'],
+            [t.name for t in response.templates]
+        )
+        self.assertContains(response, 'Yevhen')

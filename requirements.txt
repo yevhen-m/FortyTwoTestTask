@@ -1,2 +1,13 @@
+42cc-pystyle==0.0.15
 Django==1.6.7
-42cc-pystyle
+flake8==2.5.4
+futures==3.0.5
+greenlet==0.4.9
+mccabe==0.4.0
+msgpack-python==0.4.7
+neovim==0.1.0
+pep8==1.7.0
+pyflakes==1.0.0
+South==1.0.2
+trollius==2.0
+wheel==0.29.0

@@ -15,3 +15,6 @@ media
 static
 *.dat
 .env
+ticket
+ticket_plan
+.python-version
