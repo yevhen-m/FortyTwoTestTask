@@ -1,15 +1,8 @@
-import datetime
 from django.shortcuts import render
+
+from .models import Profile
 
 
 def home(request):
-    context_dict = {
-        'profile': {
-            'name': 'Yevhen',
-            'surname': 'Malov',
-            'date_of_birth': datetime.date.today(),
-            'bio': 'My bio',
-            'contact': 'yvhn.yvhn@gmail.com'
-        }
-    }
-    return render(request, 'hello/index.html', context_dict)
+    profile = Profile.objects.get(name='Yevhen')
+    return render(request, 'hello/index.html', {'profile': profile})
