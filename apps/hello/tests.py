@@ -16,4 +16,4 @@ class HomePageTest(TestCase):
         self.assertContains(response, 'Yevhen')
         self.assertContains(response, 'Malov')
         self.assertContains(response, 'My bio')
-        self.assertContains(response, 'yvhn.yvnn@gmail.com')
+        self.assertContains(response, 'yvhn.yvhn@gmail.com')
