@@ -12,8 +12,7 @@ https://docs.djangoproject.com/en/1.6/ref/settings/
 import os
 import sys
 
-PROJECT_DIR = os.path.dirname(os.path.dirname(__file__))
-BASE_DIR = os.path.dirname(PROJECT_DIR)
+BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
 # App/Library Paths
 sys.path.append(os.path.join(BASE_DIR, 'apps'))
