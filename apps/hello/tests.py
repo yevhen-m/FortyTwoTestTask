@@ -13,7 +13,7 @@ class HomePageTest(TestCase):
         # {% extends 'base.html'%} -- index template is loaded first, and the
         # base template is loaded second
         self.assertEqual(
-            ['hello/index.html', 'base.html'],
+            ['hello/index.html'],
             [t.name for t in response.templates]
         )
         self.assertContains(response, 'Yevhen')
