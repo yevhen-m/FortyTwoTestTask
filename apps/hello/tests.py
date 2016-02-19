@@ -4,6 +4,7 @@ from .models import Profile
 
 
 class HomePageTest(TestCase):
+    fixtures = ['myfixture.json']
 
     def test_home_page(self):
         '''
