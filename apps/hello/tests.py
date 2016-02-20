@@ -31,6 +31,9 @@ class HomePageTest(TestCase):
         self.assertContains(response, 'My bio')
         self.assertContains(response, 'yvhn.yvhn@gmail.com')
 
+        # Assert index page is linked to requests page
+        self.assertContains(response, 'href="/requests/"')
+
 
 class RequestsTest(TestCase):
 
