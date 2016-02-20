@@ -1,16 +1,14 @@
-<!DOCTYPE html>
-<html>
-    <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width">
-        <title>Hello Page</title>
-    </head>
-    <body>
-        <h1>This is my Hello Page</h1>
-        <p>{{ profile.name }}</p>
-        <p>{{ profile.surname }}</p>
-        <p>{{ profile.date_of_birth }}</p>
-        <p>{{ profile.bio }}</p>
-        <p>{{ profile.contact }}</p>
-    </body>
-</html>
+{% extends 'hello/base.html' %}
+
+{% block title %}Hello Page{% endblock title %}
+
+{% block heading %}This is my Hello Page{% endblock heading %}
+
+{% block content %}
+{{ block.super }}
+<p>{{ profile.name }}</p>
+<p>{{ profile.surname }}</p>
+<p>{{ profile.date_of_birth }}</p>
+<p>{{ profile.bio }}</p>
+<p>{{ profile.contact }}</p>
+{% endblock content %}
