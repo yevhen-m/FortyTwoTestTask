@@ -86,3 +86,14 @@ class RequestsTest(TestCase):
         self.assertContains(response, '/requests/')
         self.assertContains(response, '?page=2')
         self.assertContains(response, r_display)
+
+
+class RequestsMiddlewareTest(TestCase):
+
+    def test_middleware_saves_requests(self):  # noqa
+        for _ in xrange(5):
+            self.client.get('/')
+
+        requests = Request.objects.all()
+
+        self.assertEqual(requests.count(), 5)

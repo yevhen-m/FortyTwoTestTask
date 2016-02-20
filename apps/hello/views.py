@@ -7,7 +7,11 @@ DISPLAY_TIMESTAMP_FORMAT = '%Y-%m-%d %H:%M:%S.%f'
 
 
 def home(request):
-    profile = Profile.objects.get(name='Yevhen')
+    try:
+        profile = Profile.objects.get(name='Yevhen')
+    except Profile.DoesNotExist:
+        profile = None
+
     return render(request, 'hello/index.html', {'profile': profile})
 
 
