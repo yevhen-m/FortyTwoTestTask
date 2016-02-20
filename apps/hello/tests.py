@@ -31,7 +31,7 @@ class HomePageTest(TestCase):
 
 class RequestsTest(TestCase):
 
-    def test_requests_page(self):
+    def test_requests_page(self):  # noqa
         response = self.client.get('/requests/')
 
         self.assertEqual(response.status_code, 200)
