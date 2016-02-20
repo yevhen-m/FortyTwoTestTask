@@ -11,6 +11,7 @@ $(document).ready(function () {
     });
     $(window).focus(function () {
         focused = true;
+        document.title = title;
     });
 
     function updateRequests() {
@@ -20,7 +21,7 @@ $(document).ready(function () {
                 'store': false
             },
             function(data) {
-                if (data.new_requests !== 0) {
+                if (data.new_requests !== 0 && !focused) {
                     document.title = title + ' {' + data.new_requests + '}';
                 }
             }
