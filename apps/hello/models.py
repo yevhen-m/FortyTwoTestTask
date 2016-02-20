@@ -14,3 +14,6 @@ class Request(models.Model):
     path = models.CharField(max_length=300)
     query = models.CharField(max_length=300)
     timestamp = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ('-timestamp',)
