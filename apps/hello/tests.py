@@ -88,6 +88,12 @@ class RequestsTest(TestCase):
         self.assertContains(response, '?page=2')
         self.assertContains(response, r_display)
 
+    def test_requests_limit_on_the_page(self):
+        for _ in xrange(15):
+             response = self.client.get('/requests/')
+
+        self.assertEqual(len(response.context['requests']), 10)
+
 
 class RequestsMiddlewareTest(TestCase):
 
