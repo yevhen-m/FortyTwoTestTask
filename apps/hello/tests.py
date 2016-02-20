@@ -13,7 +13,10 @@ class HomePageTest(TestCase):
         response = self.client.get('/')
 
         self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed('hello/index.html')
+        self.assertEqual(
+            [t.name for t in response.templates],
+            ['hello/index.html', 'hello/base.html']
+        )
         self.assertIn('profile', response.context)
 
         profile = Profile.objects.get(name='Yevhen')
@@ -35,5 +38,8 @@ class RequestsTest(TestCase):
         response = self.client.get('/requests/')
 
         self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed('hello/requests.html')
+        self.assertEqual(
+            [t.name for t in response.templates],
+            ['hello/requests.html', 'hello/base.html']
+        )
         self.assertContains(response, 'GET')
