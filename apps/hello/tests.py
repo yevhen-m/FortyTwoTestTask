@@ -1,3 +1,5 @@
+import json
+
 from django.test import TestCase
 from django.test.utils import override_settings
 
@@ -90,6 +92,22 @@ class RequestsPageTest(TestCase):
             response = self.client.get('/requests/')
 
         self.assertEqual(len(response.context['requests']), 10)
+
+    @override_settings(MIDDLEWARE_CLASSES=())  # noqa
+    def test_requests_view_handles_ajax_requests(self):  # noqa
+        response = self.client.get('/requests/', {'id': 1},
+                                   HTTP_X_REQUESTED_WITH='XMLHttpRequest')
+
+        self.assertEqual(response.status_code, 200)
+        try:
+            data = json.loads(response.content)
+        except ValueError:
+            self.fail('requests view does not return json response content')
+
+        self.assertIn('new_requests', data)
+        self.assertEqual(data['new_requests'], 2)
+        self.assertIn('requests', data)
+        self.assertEqual(len(data['requests']), 2)
 
 
 class RequestsMiddlewareTest(TestCase):
