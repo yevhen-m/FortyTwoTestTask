@@ -1,12 +1,12 @@
 import json
 
+from jsrn.datetimeutil import to_ecma_date_string
+
 from django.http import HttpResponse
 from django.shortcuts import render
+from django.core import serializers
 
 from .models import Profile, Request
-
-
-DISPLAY_TIMESTAMP_FORMAT = '%Y-%m-%d %H:%M:%S.%f'
 
 
 def home(request):
@@ -24,15 +24,8 @@ def requests(request):
     if request.is_ajax():
         page_request_id = int(request.GET['id'])
         new_requests = r_list[0].id - page_request_id
-
-        for r in r_list:
-            r.timestamp = r.timestamp.strftime(DISPLAY_TIMESTAMP_FORMAT)
-
-        requests = {r.id: dict(method=r.method,
-                               path=r.path,
-                               query=r.query,
-                               timestamp=r.timestamp)
-                    for r in r_list}
+        requests = serializers.serialize('json', r_list)
+        # Django serializes datetime objects according to ecma 262
         return HttpResponse(
             json.dumps({
                 'new_requests': new_requests,
@@ -40,9 +33,8 @@ def requests(request):
             }),
             content_type='application/json'
         )
-
     else:
         for r in r_list:
-            r.timestamp = r.timestamp.strftime(DISPLAY_TIMESTAMP_FORMAT)
-
+            # Need to display data in this format
+            r.timestamp = to_ecma_date_string(r.timestamp)
         return render(request, 'hello/requests.html', {'requests': r_list})

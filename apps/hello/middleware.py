@@ -6,7 +6,7 @@ class RequestsMiddleware(object):
     Stores all requests to the database.
     '''
 
-    def process_request(self, request):
+    def process_request(self, request):  # noqa
         if request.is_ajax() and request.GET.get('store') == 'false':
             return
         else:

@@ -12,9 +12,11 @@
 
 {% block content %}
 {{ block.super }}
-{% for r in requests %}
-<p data-id="{{ r.id }}">{{ r.method }} {{ r.path }} {{ r.query }} {{ r.timestamp }}</p>
-{% endfor %}
+<div id="requests">
+    {% for r in requests %}
+    <p data-id="{{ r.id }}">{{ r.method }} {{ r.path }} {{ r.query }} {{ r.timestamp }}</p>
+    {% endfor %}
+</div>
 <br>
 <a href="/">Home</a>
 {% endblock content %}

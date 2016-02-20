@@ -1,10 +1,11 @@
 import json
 
+from jsrn.datetimeutil import to_ecma_date_string
+
 from django.test import TestCase
 from django.test.utils import override_settings
 
 from .models import Profile, Request
-from .views import DISPLAY_TIMESTAMP_FORMAT
 
 
 class HomePageTest(TestCase):
@@ -75,7 +76,7 @@ class RequestsPageTest(TestCase):
             r.method,
             r.path,
             r.query,
-            r.timestamp.strftime(DISPLAY_TIMESTAMP_FORMAT)
+            to_ecma_date_string(r.timestamp)
         )
 
         response = self.client.get('/requests/')
@@ -95,8 +96,11 @@ class RequestsPageTest(TestCase):
 
     @override_settings(MIDDLEWARE_CLASSES=())  # noqa
     def test_requests_view_handles_ajax_requests(self):  # noqa
-        response = self.client.get('/requests/', {'id': 1},
-                                   HTTP_X_REQUESTED_WITH='XMLHttpRequest')
+        response = self.client.get(
+            '/requests/',
+            {'id': 1},
+            HTTP_X_REQUESTED_WITH='XMLHttpRequest'
+        )
 
         self.assertEqual(response.status_code, 200)
         try:
@@ -107,15 +111,20 @@ class RequestsPageTest(TestCase):
         self.assertIn('new_requests', data)
         self.assertEqual(data['new_requests'], 2)
         self.assertIn('requests', data)
-        self.assertEqual(len(data['requests']), 3)
+        # data['requests'] is a serialized query set, so I need to turn it into
+        # a list
+        requests = json.loads(data['requests'])
+        self.assertEqual(len(requests), 3)
 
 
 class RequestsMiddlewareTest(TestCase):
 
     def test_middleware_is_registered_in_settings_module(self):  # noqa
         from fortytwo_test_task.settings import MIDDLEWARE_CLASSES
-        self.assertIn('apps.hello.middleware.RequestsMiddleware',
-                      MIDDLEWARE_CLASSES)
+        self.assertIn(
+            'apps.hello.middleware.RequestsMiddleware',
+            MIDDLEWARE_CLASSES
+        )
 
     def test_middleware_saves_requests(self):  # noqa
         for _ in xrange(5):
