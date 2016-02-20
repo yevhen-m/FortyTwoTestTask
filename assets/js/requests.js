@@ -1,7 +1,7 @@
 $(document).ready(function () {
     setInterval(function() {
         updateRequests();
-    }, 3000);
+    }, 5000);
 
     var focused;
 
@@ -11,4 +11,12 @@ $(document).ready(function () {
     $(window).focus(function () {
         focused = true;
     });
+
+    function updateRequests() {
+        $.get('/requests', {'id': 1},
+              function(data) {
+                  console.log(data);
+              }
+             );
+    }
 });
