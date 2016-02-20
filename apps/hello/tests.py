@@ -27,3 +27,13 @@ class HomePageTest(TestCase):
         self.assertContains(response, 'Malov')
         self.assertContains(response, 'My bio')
         self.assertContains(response, 'yvhn.yvhn@gmail.com')
+
+
+class RequestsTest(TestCase):
+
+    def test_requests_page(self):
+        response = self.client.get('/requests/')
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed('hello/requests.html')
+        self.assertContains(response, 'GET')
