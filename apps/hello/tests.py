@@ -85,7 +85,7 @@ class RequestsPageTest(TestCase):
         self.assertContains(response, '?page=2')
         self.assertContains(response, r_display)
 
-    def test_requests_view_limits_requests_on_the_page(self):
+    def test_requests_view_limits_requests_on_the_page(self):  # noqa
         for _ in xrange(15):
             response = self.client.get('/requests/')
 
