@@ -46,3 +46,6 @@ class RequestsTest(TestCase):
             ['hello/requests.html', 'hello/base.html']
         )
         self.assertContains(response, 'GET')
+
+        # Assert requests page is linked to index page
+        self.assertContains(response, 'href="/"')
