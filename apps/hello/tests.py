@@ -69,7 +69,7 @@ class RequestsTest(TestCase):
             query='?page=2'
         )
 
-    @override_settings(MIDDLEWARE_CLASSES=())
+    @override_settings(MIDDLEWARE_CLASSES=())  # noqa
     def test_requests_shows_data_from_db(self):  # noqa
         r = Request.objects.first()
         r_display = '{} {} {} {}'.format(
@@ -91,7 +91,7 @@ class RequestsTest(TestCase):
 
 class RequestsMiddlewareTest(TestCase):
 
-    def test_middleware_is_registered_in_settings_module(self):
+    def test_middleware_is_registered_in_settings_module(self):  # noqa
         from fortytwo_test_task.settings import MIDDLEWARE_CLASSES
         self.assertIn('apps.hello.middleware.RequestsMiddleware',
                       MIDDLEWARE_CLASSES)
@@ -107,8 +107,7 @@ class RequestsMiddlewareTest(TestCase):
 
 class RequestTest(TestCase):
 
-    @override_settings(MIDDLEWARE_CLASSES=())
-    def test_requests_are_ordered_by_timestamp(self):
+    def test_requests_are_ordered_by_timestamp(self):  # noqa
         kwargs = dict(method='GET',
                       path='/',
                       query='')
