@@ -8,10 +8,7 @@ from .views import DISPLAY_TIMESTAMP_FORMAT
 class HomePageTest(TestCase):
     fixtures = ['myfixture.json']
 
-    def test_home_page(self):
-        '''
-        Test home page view.
-        '''
+    def test_home_view(self):  # noqa
         response = self.client.get('/')
 
         self.assertEqual(response.status_code, 200)
@@ -37,20 +34,7 @@ class HomePageTest(TestCase):
         self.assertContains(response, 'href="/requests/"')
 
 
-class RequestsTest(TestCase):
-
-    def test_requests_page(self):  # noqa
-        response = self.client.get('/requests/')
-
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(
-            [t.name for t in response.templates],
-            ['hello/requests.html', 'hello/base.html']
-        )
-        self.assertContains(response, 'GET')
-
-        # Assert requests page is linked to index page
-        self.assertContains(response, 'href="/"')
+class RequestsPageTest(TestCase):
 
     def setUp(self):
         Request.objects.create(
@@ -69,8 +53,21 @@ class RequestsTest(TestCase):
             query='?page=2'
         )
 
+    def test_requests_view(self):  # noqa
+        response = self.client.get('/requests/')
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(
+            [t.name for t in response.templates],
+            ['hello/requests.html', 'hello/base.html']
+        )
+        self.assertContains(response, 'GET')
+
+        # Assert requests page is linked to index page
+        self.assertContains(response, 'href="/"')
+
     @override_settings(MIDDLEWARE_CLASSES=())  # noqa
-    def test_requests_shows_data_from_db(self):  # noqa
+    def test_requests_view_shows_data_from_db(self):  # noqa
         r = Request.objects.first()
         r_display = '{} {} {} {}'.format(
             r.method,
@@ -88,9 +85,9 @@ class RequestsTest(TestCase):
         self.assertContains(response, '?page=2')
         self.assertContains(response, r_display)
 
-    def test_requests_limit_on_the_page(self):
+    def test_requests_view_limits_requests_on_the_page(self):
         for _ in xrange(15):
-             response = self.client.get('/requests/')
+            response = self.client.get('/requests/')
 
         self.assertEqual(len(response.context['requests']), 10)
 

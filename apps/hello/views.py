@@ -16,7 +16,7 @@ def home(request):
 
 
 def requests(request):
-    requests = Request.objects.all()
+    requests = Request.objects.all()[:10]
     for r in requests:
         r.timestamp = r.timestamp.strftime(DISPLAY_TIMESTAMP_FORMAT)
 
