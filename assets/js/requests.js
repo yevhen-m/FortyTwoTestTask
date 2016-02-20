@@ -4,6 +4,7 @@ $(document).ready(function () {
     }, 5000);
 
     var focused;
+    var title = document.title;
 
     $(window).blur(function () {
         focused = false;
@@ -13,10 +14,16 @@ $(document).ready(function () {
     });
 
     function updateRequests() {
-        $.get('/requests', {'id': 1},
-              function(data) {
-                  console.log(data);
-              }
-             );
+        $.get(
+            '/requests/', {
+                'id': $('p').data('id'),
+                'store': false
+            },
+            function(data) {
+                if (data.new_requests !== 0) {
+                    document.title = title + ' {' + data.new_requests + '}';
+                }
+            }
+        );
     }
 });

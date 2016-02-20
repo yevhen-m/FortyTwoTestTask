@@ -7,8 +7,11 @@ class RequestsMiddleware(object):
     '''
 
     def process_request(self, request):
-        Request.objects.create(
-            method=request.method,
-            path=request.path,
-            query=request.META.get('query_string', '')
-        )
+        if request.is_ajax() and request.GET.get('store') == 'false':
+            return
+        else:
+            Request.objects.create(
+                method=request.method,
+                path=request.path,
+                query=request.META.get('query_string', '')
+            )
