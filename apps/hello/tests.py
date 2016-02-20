@@ -1,4 +1,5 @@
 from django.test import TestCase
+from django.test.utils import override_settings
 
 from .models import Profile, Request
 from .views import DISPLAY_TIMESTAMP_FORMAT
@@ -68,6 +69,7 @@ class RequestsTest(TestCase):
             query='?page=2'
         )
 
+    @override_settings(MIDDLEWARE_CLASSES=())
     def test_requests_shows_data_from_db(self):  # noqa
         r = Request.objects.first()
         r_display = '{} {} {} {}'.format(
@@ -81,7 +83,6 @@ class RequestsTest(TestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertIn('requests', response.context)
-        self.assertEqual(len(response.context['requests']), 3)
         self.assertContains(response, 'GET', count=3)
         self.assertContains(response, '/requests/')
         self.assertContains(response, '?page=2')
