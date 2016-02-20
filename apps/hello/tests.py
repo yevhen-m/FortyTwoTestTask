@@ -1,6 +1,6 @@
 from django.test import TestCase
 
-from .models import Profile
+from .models import Profile, Request
 
 
 class HomePageTest(TestCase):
@@ -49,3 +49,36 @@ class RequestsTest(TestCase):
 
         # Assert requests page is linked to index page
         self.assertContains(response, 'href="/"')
+
+    def test_requests_shows_data_from_db(self):
+        Request.objects.create(
+            method='GET',
+            path='/',
+            query=''
+        )
+        Request.objects.create(
+            method='GET',
+            path='/requests/',
+            query=''
+        )
+        r = Request.objects.create(
+            method='GET',
+            path='/',
+            query='?page=2'
+        )
+        r_display = '{} {} {} {}'.format(
+            r.method,
+            r.path,
+            r.query,
+            r.timestamp.strftime('%Y-%m-%d %H:%M:%S.%f')
+        )
+
+        response = self.client.get('/requests/')
+
+        self.assertIn('requests', response.context)
+        self.assertEqual(len(response.context['requests']), 3)
+        self.assertContains(response, 'GET', count=3)
+        self.assertContains(response, '/', count=2)
+        self.assertContains(response, '/requests/')
+        self.assertContaints(response, '?page=2')
+        self.assertContains(response, r_display)
