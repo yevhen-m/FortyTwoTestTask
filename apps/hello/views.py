@@ -1,6 +1,9 @@
 from django.shortcuts import render
 
-from .models import Profile
+from .models import Profile, Request
+
+
+DISPLAY_TIMESTAMP_FORMAT = '%Y-%m-%d %H:%M:%S.%f'
 
 
 def home(request):
@@ -9,4 +12,8 @@ def home(request):
 
 
 def requests(request):
-    return render(request, 'hello/requests.html')
+    requests = Request.objects.all()
+    for r in requests:
+        r.timestamp = r.timestamp.strftime(DISPLAY_TIMESTAMP_FORMAT)
+
+    return render(request, 'hello/requests.html', {'requests': requests})

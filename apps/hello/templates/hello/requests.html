@@ -6,7 +6,9 @@
 
 {% block content %}
 {{ block.super }}
-<p>GET / ?page=2 2016-02-15 14:30:59.000200</p>
+{% for r in requests %}
+<p>{{ r.method }} {{ r.path }} {{ r.query }} {{ r.timestamp }}</p>
+{% endfor %}
 <br>
 <a href="/">Home</a>
 {% endblock content %}
