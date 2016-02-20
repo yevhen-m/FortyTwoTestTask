@@ -90,6 +90,11 @@ class RequestsTest(TestCase):
 
 class RequestsMiddlewareTest(TestCase):
 
+    def test_middleware_is_registered_in_settings_module(self):
+        from fortytwo_test_task.settings import MIDDLEWARE_CLASSES
+        self.assertIn('apps.hello.middleware.RequestsMiddleware',
+                      MIDDLEWARE_CLASSES)
+
     def test_middleware_saves_requests(self):  # noqa
         for _ in xrange(5):
             self.client.get('/')
