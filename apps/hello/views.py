@@ -1,3 +1,6 @@
+import json
+
+from django.http import HttpResponse
 from django.shortcuts import render
 
 from .models import Profile, Request
@@ -16,8 +19,30 @@ def home(request):
 
 
 def requests(request):
-    requests = Request.objects.all()[:10]
-    for r in requests:
-        r.timestamp = r.timestamp.strftime(DISPLAY_TIMESTAMP_FORMAT)
+    r_list = Request.objects.all()[:10]
 
-    return render(request, 'hello/requests.html', {'requests': requests})
+    if request.is_ajax():
+        page_request_id = int(request.GET['id'])
+        new_requests = r_list[0].id - page_request_id
+
+        for r in r_list:
+            r.timestamp = r.timestamp.strftime(DISPLAY_TIMESTAMP_FORMAT)
+
+        requests = {r.id: dict(method=r.method,
+                               path=r.path,
+                               query=r.query,
+                               timestamp=r.timestamp)
+                    for r in r_list}
+        return HttpResponse(
+            json.dumps({
+                'new_requests': new_requests,
+                'requests': requests
+            }),
+            content_type='application/json'
+        )
+
+    else:
+        for r in r_list:
+            r.timestamp = r.timestamp.strftime(DISPLAY_TIMESTAMP_FORMAT)
+
+        return render(request, 'hello/requests.html', {'requests': r_list})

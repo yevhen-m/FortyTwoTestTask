@@ -107,7 +107,7 @@ class RequestsPageTest(TestCase):
         self.assertIn('new_requests', data)
         self.assertEqual(data['new_requests'], 2)
         self.assertIn('requests', data)
-        self.assertEqual(len(data['requests']), 2)
+        self.assertEqual(len(data['requests']), 3)
 
 
 class RequestsMiddlewareTest(TestCase):
