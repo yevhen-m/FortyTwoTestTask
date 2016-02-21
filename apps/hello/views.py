@@ -2,7 +2,7 @@ import json
 
 from jsrn.datetimeutil import to_ecma_date_string
 
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseBadRequest
 from django.shortcuts import render
 from django.core import serializers
 
@@ -48,7 +48,12 @@ def edit_profile(request):
         form = ProfileForm(request.POST, instance=profile)
         if form.is_valid():
             form.save()
-        return HttpResponse('')
+            return HttpResponse('')
+        else:
+            return HttpResponseBadRequest(
+                json.dumps(form.errors),
+                content_type='application/json'
+            )
     else:
         form = ProfileForm(instance=profile)
         return render(request, 'hello/edit_form.html', {'form': form})

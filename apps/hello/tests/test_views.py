@@ -205,11 +205,11 @@ class EditFormPageTest(TestCase):
         response = self.client.post(
             self.url,
             dict(
-                name=None,
-                surname=None,
-                bio=None,
-                date_of_birth=None,
-                contact=None
+                name='',
+                surname='',
+                bio='',
+                date_of_birth='',
+                contact=''
             ),
             HTTP_X_REQUESTED_WITH='XMLHttpRequest'
         )
