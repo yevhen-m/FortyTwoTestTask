@@ -3,7 +3,7 @@
 {% block heading %}Edit Your Profile{% endblock heading %}
 {% block content %}
 {{ block.super }}
-<form id="editForm" action="" method="post">
+<form id="editForm" action="{% url 'edit_profile' %}" method="post">
     <p>Name: <input type="text" name="name" /></p>
     <p>Surname: <input type="text" name="surname" /></p>
     <p>Bio: <textarea name="bio"></textarea></p>
