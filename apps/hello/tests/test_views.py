@@ -2,17 +2,21 @@ import json
 
 from jsrn.datetimeutil import to_ecma_date_string
 
+from django.core.urlresolvers import reverse
 from django.test import TestCase
 from django.test.utils import override_settings
 
-from .models import Profile, Request
+from apps.hello.models import Profile, Request
 
 
 class HomePageTest(TestCase):
     fixtures = ['myfixture.json']
 
+    def setUp(self):
+        self.url = reverse('home')
+
     def test_home_view(self):  # noqa
-        response = self.client.get('/')
+        response = self.client.get(self.url)
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual(
@@ -22,8 +26,8 @@ class HomePageTest(TestCase):
         self.assertIn('profile', response.context)
 
         profile = Profile.objects.get(name='Yevhen')
-
         c = response.context
+
         self.assertIsInstance(c['profile'], Profile)
         self.assertEqual(c['profile'].name, profile.name)
         self.assertEqual(c['profile'].surname, profile.surname)
@@ -40,6 +44,8 @@ class HomePageTest(TestCase):
 class RequestsPageTest(TestCase):
 
     def setUp(self):
+        self.url = reverse('requests')
+
         Request.objects.create(
             method='GET',
             path='/',
@@ -57,7 +63,7 @@ class RequestsPageTest(TestCase):
         )
 
     def test_requests_view(self):  # noqa
-        response = self.client.get('/requests/')
+        response = self.client.get(self.url)
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual(
@@ -79,7 +85,7 @@ class RequestsPageTest(TestCase):
             to_ecma_date_string(r.timestamp)
         )
 
-        response = self.client.get('/requests/')
+        response = self.client.get(self.url)
 
         self.assertEqual(response.status_code, 200)
         self.assertIn('requests', response.context)
@@ -90,14 +96,14 @@ class RequestsPageTest(TestCase):
 
     def test_requests_view_limits_requests_on_the_page(self):  # noqa
         for _ in xrange(15):
-            response = self.client.get('/requests/')
+            response = self.client.get(self.url)
 
         self.assertEqual(len(response.context['requests']), 10)
 
     @override_settings(MIDDLEWARE_CLASSES=())  # noqa
     def test_requests_view_handles_ajax_requests(self):  # noqa
         response = self.client.get(
-            '/requests/',
+            self.url,
             {'id': 1},
             HTTP_X_REQUESTED_WITH='XMLHttpRequest'
         )
@@ -115,36 +121,3 @@ class RequestsPageTest(TestCase):
         # a list
         requests = json.loads(data['requests'])
         self.assertEqual(len(requests), 3)
-
-
-class RequestsMiddlewareTest(TestCase):
-
-    def test_middleware_is_registered_in_settings_module(self):  # noqa
-        from fortytwo_test_task.settings import MIDDLEWARE_CLASSES
-        self.assertIn(
-            'apps.hello.middleware.RequestsMiddleware',
-            MIDDLEWARE_CLASSES
-        )
-
-    def test_middleware_saves_requests(self):  # noqa
-        for _ in xrange(5):
-            self.client.get('/')
-
-        requests = Request.objects.all()
-
-        self.assertEqual(requests.count(), 5)
-
-
-class RequestTest(TestCase):
-
-    def test_requests_are_ordered_by_timestamp(self):  # noqa
-        kwargs = dict(method='GET',
-                      path='/',
-                      query='')
-        for _ in xrange(3):
-            Request.objects.create(**kwargs)
-
-        r1, r2, r3 = Request.objects.all()
-
-        self.assertGreater(r1.timestamp, r2.timestamp)
-        self.assertGreater(r2.timestamp, r3.timestamp)
