@@ -199,3 +199,28 @@ class EditFormPageTest(TestCase):
 
         profile = Profile.objects.get(name='John')
         self.assertEqual(profile.surname, 'Doe')
+        self.assertEqual(profile.contact, 'john.doe@mail.com')
+
+    def test_edit_profile_view_handles_posts_with_bad_data(self):  # noqa
+        response = self.client.post(
+            self.url,
+            dict(
+                name=None,
+                surname=None,
+                bio=None,
+                date_of_birth=None,
+                contact=None
+            ),
+            HTTP_X_REQUESTED_WITH='XMLHttpRequest'
+        )
+        self.assertEqual(response.status_code, 400)
+        try:
+            errors = json.loads(response.content)
+        except ValueError:
+            self.fail('edit_profile view returns invalid json data on '
+                      'bad post data')
+        self.assertIn('name', errors)
+        self.assertIn('surname', errors)
+        self.assertIn('bio', errors)
+        self.assertIn('contact', errors)
+        self.assertIn('date_of_birth', errors)
