@@ -1,6 +1,19 @@
 $(document).ready(function() {
-    // bind 'myForm' and provide a simple callback function
-    $('#editForm').ajaxForm(function() {
-        alert("Thank you for your comment!");
-    });
+    var $st = $('#status');
+
+    $('#editForm').ajaxForm(
+        {
+            beforeSubmit: function() {
+                // disable inputs
+            },
+            success: function() {
+                $st.show();
+                $st.text('Successfully changed!');
+            },
+            error: function() {
+                $st.show();
+                $st.text('There was an ERROR!');
+            }
+        }
+    );
 });
