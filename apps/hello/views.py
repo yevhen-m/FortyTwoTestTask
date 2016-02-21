@@ -7,6 +7,7 @@ from django.shortcuts import render
 from django.core import serializers
 
 from .models import Profile, Request
+from .forms import ProfileForm
 
 
 def home(request):
@@ -41,4 +42,6 @@ def requests(request):
 
 
 def edit_profile(request):
-    return render(request, 'hello/edit_form.html')
+    form = ProfileForm()
+    return render(request, 'hello/edit_form.html',
+                  {'form': form})

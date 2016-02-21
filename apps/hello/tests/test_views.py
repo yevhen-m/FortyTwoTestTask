@@ -41,7 +41,7 @@ class HomePageTest(TestCase):
         # Assert index page is linked to requests page
         self.assertContains(response, reverse('requests'))
 
-    def test_home_page_is_linked_to_edit_profile_page(self):
+    def test_home_page_is_linked_to_edit_profile_page(self):  # noqa
         response = self.client.get(self.url)
 
         self.assertContains(response, reverse('edit_profile'))
