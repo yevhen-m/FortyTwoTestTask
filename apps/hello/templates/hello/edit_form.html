@@ -14,11 +14,11 @@
 {{ block.super }}
 <form id="editForm" action="{% url 'edit_profile' %}" method="post">
     <p id="status" style="display: none;"></p>
-    <p>Name: <input type="text" name="name" /></p>
-    <p>Surname: <input type="text" name="surname" /></p>
-    <p>Bio: <textarea name="bio"></textarea></p>
-    <p>Date of birth: <input type="date" name="date_of_birth"></p>
-    <p>Contact: <input type="email" name="contact" /></p>
+    <p>{{ form.name.label_tag }} {{ form.name }}</p>
+    <p>{{ form.surname.label_tag }} {{ form.surname }}</p>
+    <p>{{ form.bio.label_tag }} {{ form.bio }}</p>
+    <p>{{ form.date_of_birth.label_tag }} {{ form.date_of_birth }}</p>
+    <p>{{ form.contact.label_tag }} {{ form.contact }}</p>
     <p><input type="submit" value="Submit" /></p>
 </form>
 <br>
