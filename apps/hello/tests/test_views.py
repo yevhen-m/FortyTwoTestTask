@@ -7,6 +7,7 @@ from django.test import TestCase
 from django.test.utils import override_settings
 
 from apps.hello.models import Profile, Request
+from apps.hello.forms import ProfileForm
 
 
 class HomePageTest(TestCase):
@@ -148,8 +149,14 @@ class EditFormPageTest(TestCase):
         self.assertContains(response, 'name="bio"')
         self.assertContains(response, 'name="contact"')
 
-    def test_edit_profile_page_is_linked_to_home_page(self):
+    def test_edit_profile_page_is_linked_to_home_page(self):  # noqa
         response = self.client.get(self.url)
 
         # Can't use reverse here for '/'
         self.assertContains(response, 'href="/"')
+
+    def test_edit_profile_view_renders_template_with_a_form(self):  # noqa
+        response = self.client.get(self.url)
+
+        self.assertIn('form', response.context)
+        self.assertIsInstance(response.context['form'], ProfileForm)
