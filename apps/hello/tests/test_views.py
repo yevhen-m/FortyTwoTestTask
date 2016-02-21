@@ -199,4 +199,3 @@ class EditFormPageTest(TestCase):
 
         profile = Profile.objects.get(name='John')
         self.assertEqual(profile.surname, 'Doe')
-        self.assertEqual(profile.contact, 'john.snow@mail.com')

@@ -43,6 +43,12 @@ def requests(request):
 
 def edit_profile(request):
     profile = Profile.objects.first()
-    form = ProfileForm(instance=profile)
-    return render(request, 'hello/edit_form.html',
-                  {'form': form})
+
+    if request.method == 'POST':
+        form = ProfileForm(request.POST, instance=profile)
+        if form.is_valid():
+            form.save()
+        return HttpResponse('')
+    else:
+        form = ProfileForm(instance=profile)
+        return render(request, 'hello/edit_form.html', {'form': form})
