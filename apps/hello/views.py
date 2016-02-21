@@ -38,3 +38,7 @@ def requests(request):
             # Need to display data in this format
             r.timestamp = to_ecma_date_string(r.timestamp)
         return render(request, 'hello/requests.html', {'requests': r_list})
+
+
+def edit_profile(request):
+    return render(request, 'hello/edit_form.html')
