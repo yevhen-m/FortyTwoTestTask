@@ -1,0 +1,14 @@
+{% extends 'hello/base.html' %}
+{% block title %}Edit Profile{% endblock title %}
+{% block heading %}Edit Your Profile{% endblock heading %}
+{% block content %}
+{{ block.super }}
+<form id="editForm" action="" method="post">
+    <p>Name: <input type="text" name="name" /></p>
+    <p>Surname: <input type="text" name="surname" /></p>
+    <p>Bio: <textarea name="bio"></textarea></p>
+    <p>Date of birth: <input type="date" name="date_of_birth"></p>
+    <p>Contact: <input type="email" name="contact" /></p>
+    <p><input type="submit" value="Submit" /></p>
+</form>
+{% endblock content %}
