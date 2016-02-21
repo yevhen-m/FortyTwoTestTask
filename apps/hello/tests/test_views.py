@@ -135,6 +135,14 @@ class EditFormPageTest(TestCase):
     def setUp(self):
         self.url = reverse('edit_profile')
 
+        Profile.objects.create(
+            name='John',
+            surname='Snow',
+            bio='',
+            date_of_birth=datetime.date.today(),
+            contact='john.snow@mail.com'
+        )
+
     def test_edit_form_view_displays_form(self):  # noqa
         response = self.client.get(self.url)
 
@@ -165,18 +173,30 @@ class EditFormPageTest(TestCase):
         self.assertIsInstance(response.context['form'], ProfileForm)
 
     def test_edit_profile_view_populates_form_with_profile_data(self):  # noqa
-        profile = Profile.objects.create(
-            name='John',
-            surname='Snow',
-            bio='',
-            date_of_birth=datetime.date.today(),
-            contact='john.snow@mail.com'
-        )
-
         response = self.client.get(self.url)
 
         self.assertEqual(response.status_code, 200)
 
+        profile = Profile.objects.get(name='John')
+
         self.assertContains(response, profile.name)
         self.assertContains(response, profile.surname)
         self.assertContains(response, profile.contact)
+
+    def test_edit_profile_view_handles_ajax_post_requests(self):  # noqa
+        response = self.client.post(
+            self.url,
+            dict(
+                name='John',
+                surname='Doe',
+                bio='Bio',
+                date_of_birth='2016-02-18',
+                contact='john.doe@mail.com'
+            ),
+            HTTP_X_REQUESTED_WITH='XMLHttpRequest'
+        )
+        self.assertEqual(response.status_code, 200)
+
+        profile = Profile.objects.get(name='John')
+        self.assertEqual(profile.surname, 'Doe')
+        self.assertEqual(profile.contact, 'john.snow@mail.com')
