@@ -38,7 +38,12 @@ class HomePageTest(TestCase):
         self.assertContains(response, 'yvhn.yvhn@gmail.com')
 
         # Assert index page is linked to requests page
-        self.assertContains(response, 'href="/requests/"')
+        self.assertContains(response, reverse('requests'))
+
+    def test_home_page_is_linked_to_edit_profile_page(self):
+        response = self.client.get(self.url)
+
+        self.assertContains(response, reverse('edit_profile'))
 
 
 class RequestsPageTest(TestCase):
@@ -73,7 +78,7 @@ class RequestsPageTest(TestCase):
         self.assertContains(response, 'GET')
 
         # Assert requests page is linked to index page
-        self.assertContains(response, 'href="/"')
+        self.assertContains(response, reverse('home'))
 
     @override_settings(MIDDLEWARE_CLASSES=())  # noqa
     def test_requests_view_shows_data_from_db(self):  # noqa
@@ -142,3 +147,9 @@ class EditFormPageTest(TestCase):
         self.assertContains(response, 'name="date_of_birth"')
         self.assertContains(response, 'name="bio"')
         self.assertContains(response, 'name="contact"')
+
+    def test_edit_profile_page_is_linked_to_home_page(self):
+        response = self.client.get(self.url)
+
+        # Can't use reverse here for '/'
+        self.assertContains(response, 'href="/"')
