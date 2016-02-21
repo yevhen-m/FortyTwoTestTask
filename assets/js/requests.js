@@ -3,7 +3,7 @@ $(document).ready(function () {
         updateRequests();
     }, 3000);
 
-    var focused;
+    var focused = true;
     var title = document.title;
     var recieved_data;
 
