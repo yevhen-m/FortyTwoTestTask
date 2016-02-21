@@ -1,20 +1,24 @@
 $(document).ready(function() {
     var $st = $('#status');
+    var $inputs = $('input, textarea');
 
     $('#editForm').ajaxForm(
         {
             beforeSubmit: function() {
                 $('.error').remove();
+                $st.show();
+                $st.text('Loading...');
+                $inputs.attr('disabled', 'disabled');
             },
             success: function() {
                 $st.show();
                 $st.text('Successfully changed!');
+                $inputs.removeAttr('disabled');
             },
             error: function(response) {
                 var errors = JSON.parse(response.responseText);
-                console.log(errors);
                 $st.show();
-                $st.text('There was an ERROR!');
+                $st.text('Fix all the errors and try again!');
                 for (var input_name in errors) {
                     var $input = $('#id_' + input_name);
 
