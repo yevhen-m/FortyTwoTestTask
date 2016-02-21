@@ -121,3 +121,24 @@ class RequestsPageTest(TestCase):
         # a list
         requests = json.loads(data['requests'])
         self.assertEqual(len(requests), 3)
+
+
+class EditFormPageTest(TestCase):
+
+    def setUp(self):
+        self.url = reverse('edit_form')
+
+    def test_edit_form_view_displays_form(self):
+        response = self.client.get(self.url)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(
+            [t.name for t in response.templates],
+            ['hello/edit_form.html', 'hello/base.html']
+        )
+        self.assertContains(response, '#editForm')
+        self.assertContains(response, 'name="name"')
+        self.assertContains(response, 'name="surname"')
+        self.assertContains(response, 'name="date_of_birth"')
+        self.assertContains(response, 'name="bio"')
+        self.assertContains(response, 'name="contact"')
