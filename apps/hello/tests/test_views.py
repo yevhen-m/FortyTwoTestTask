@@ -165,10 +165,6 @@ class EditFormPageTest(TestCase):
         self.assertIsInstance(response.context['form'], ProfileForm)
 
     def test_edit_profile_view_populates_form_with_profile_data(self):  # noqa
-        response = self.client.get(self.url)
-
-        self.assertEqual(response.status_code, 200)
-
         profile = Profile.objects.create(
             name='John',
             surname='Snow',
@@ -177,6 +173,10 @@ class EditFormPageTest(TestCase):
             contact='john.snow@mail.com'
         )
 
+        response = self.client.get(self.url)
+
+        self.assertEqual(response.status_code, 200)
+
         self.assertContains(response, profile.name)
         self.assertContains(response, profile.surname)
-        self.assertContains(response, profile.email)
+        self.assertContains(response, profile.contact)

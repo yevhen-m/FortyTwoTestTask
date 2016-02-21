@@ -42,6 +42,7 @@ def requests(request):
 
 
 def edit_profile(request):
-    form = ProfileForm()
+    profile = Profile.objects.first()
+    form = ProfileForm(instance=profile)
     return render(request, 'hello/edit_form.html',
                   {'form': form})
