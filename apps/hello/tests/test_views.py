@@ -126,9 +126,9 @@ class RequestsPageTest(TestCase):
 class EditFormPageTest(TestCase):
 
     def setUp(self):
-        self.url = reverse('edit_form')
+        self.url = reverse('edit_profile')
 
-    def test_edit_form_view_displays_form(self):
+    def test_edit_form_view_displays_form(self):  # noqa
         response = self.client.get(self.url)
 
         self.assertEqual(response.status_code, 200)
@@ -136,7 +136,7 @@ class EditFormPageTest(TestCase):
             [t.name for t in response.templates],
             ['hello/edit_form.html', 'hello/base.html']
         )
-        self.assertContains(response, '#editForm')
+        self.assertContains(response, 'editForm')
         self.assertContains(response, 'name="name"')
         self.assertContains(response, 'name="surname"')
         self.assertContains(response, 'name="date_of_birth"')
