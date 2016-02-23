@@ -8,8 +8,7 @@
 {% block content %}
 {{ block.super }}
 <form action="" method="post">
-    <p>Username: <input type="text" name="username"></p>
-    <p>Password: <input type="text" name="password"></p>
+    {{ form.as_p }}
 </form>
 <br>
 <a href="{% url 'home' %}">Home</a>
