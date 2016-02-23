@@ -7,6 +7,7 @@ class Profile(models.Model):
     date_of_birth = models.DateField()
     bio = models.TextField()
     contact = models.EmailField()
+    photo = models.ImageField(upload_to='images', blank=True, null=True)
 
 
 class Request(models.Model):
