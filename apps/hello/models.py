@@ -15,15 +15,17 @@ class Profile(models.Model):
 
     def save(self, *args, **kwargs):
         super(Profile, self).save(*args, **kwargs)
-
-        if self.photo.path:
+        try:
             image_path = self.photo.path
-            try:
-                image = Image.open(image_path)
-            except IOError:
-                return
-            image.thumbnail(PROFILE_PHOTO_SIZE, Image.ANTIALIAS)
-            image.save(image_path)
+        except ValueError:
+            return
+
+        try:
+            image = Image.open(image_path)
+        except IOError:
+            return
+        image.thumbnail(PROFILE_PHOTO_SIZE, Image.ANTIALIAS)
+        image.save(image_path)
 
 
 class Request(models.Model):
