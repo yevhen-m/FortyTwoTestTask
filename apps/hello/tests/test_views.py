@@ -158,7 +158,11 @@ class EditFormPageTest(TestCase):
             contact='john.snow@mail.com'
         )
 
-    def test_edit_form_view_displays_form(self):  # noqa
+    def test_edit_form_view_displays_form(self):
+        '''
+        Test that edit form view works, renders the right templates,
+        and the response page contains the form.
+        '''
         response = self.client.get(self.url)
 
         self.assertEqual(response.status_code, 200)
@@ -173,21 +177,32 @@ class EditFormPageTest(TestCase):
         self.assertContains(response, 'name="bio"')
         self.assertContains(response, 'name="contact"')
 
-    def test_edit_profile_page_is_linked_to_home_page(self):  # noqa
+    def test_edit_profile_page_is_linked_to_home_page(self):
+        '''
+        Test that edit profile page has a link to the home page.
+        '''
         response = self.client.get(self.url)
 
         # Can't use reverse here for '/'
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, 'href="/"')
 
-    def test_edit_profile_view_renders_template_with_a_form(self):  # noqa
+    def test_edit_profile_view_renders_template_with_a_form(self):
+        '''
+        Test that edit_profiel form renders the template with a
+        ProfileForm form.
+        '''
         response = self.client.get(self.url)
 
         self.assertEqual(response.status_code, 200)
         self.assertIn('form', response.context)
         self.assertIsInstance(response.context['form'], ProfileForm)
 
-    def test_edit_profile_view_populates_form_with_profile_data(self):  # noqa
+    def test_edit_profile_view_populates_form_with_profile_data(self):
+        '''
+        Test that edit profile form is initially populated with
+        profile data from db.
+        '''
         response = self.client.get(self.url)
 
         self.assertEqual(response.status_code, 200)
@@ -198,7 +213,11 @@ class EditFormPageTest(TestCase):
         self.assertContains(response, profile.surname)
         self.assertContains(response, profile.contact)
 
-    def test_edit_profile_view_handles_ajax_post_requests(self):  # noqa
+    def test_edit_profile_view_handles_ajax_post_requests(self):
+        '''
+        Test that edit profile view updates the profile with recieved
+        post data, and stores updated profile to db.
+        '''
         response = self.client.post(
             self.url,
             dict(
@@ -216,7 +235,11 @@ class EditFormPageTest(TestCase):
         self.assertEqual(profile.surname, 'Doe')
         self.assertEqual(profile.contact, 'john.doe@mail.com')
 
-    def test_edit_profile_view_handles_posts_with_bad_data(self):  # noqa
+    def test_edit_profile_view_handles_posts_with_bad_data(self):
+        '''
+        Test that edit profile view handles invalid recieved post data
+        and sends form errors to the client.
+        '''
         response = self.client.post(
             self.url,
             dict(
@@ -239,6 +262,22 @@ class EditFormPageTest(TestCase):
         self.assertIn('bio', errors)
         self.assertIn('contact', errors)
         self.assertIn('date_of_birth', errors)
+
+    def test_access_to_edit_profile_page(self):
+        '''
+        Test that anonymous user cannot access edit profile page.
+        '''
+        response = self.client.get(self.url, follow=True)
+
+        self.assertEqual(response.status_code, 200)
+
+        redirect_url, status_code = response.redirect_chain[0]
+        self.assertEqual(status_code, 302)
+        self.assertEqual(
+            redirect_url,
+            'http://testserver/login/?next=/edit_profile/'
+        )
+        self.assertContains(response, 'Sign In')
 
 
 class AuthPageTest(TestCase):
