@@ -4,8 +4,9 @@ import json
 from jsrn.datetimeutil import to_ecma_date_string
 
 from django.core.urlresolvers import reverse
-from django.test import TestCase
+from django.test import TestCase, Client
 from django.test.utils import override_settings
+from django.contrib.auth.models import User
 
 from apps.hello.models import Profile, Request
 from apps.hello.forms import ProfileForm
@@ -150,6 +151,9 @@ class EditFormPageTest(TestCase):
     def setUp(self):
         self.url = reverse('edit_profile')
 
+        User.objects.create_user('test', password='test')
+        self.client.login(username='test', password='test')
+
         Profile.objects.create(
             name='John',
             surname='Snow',
@@ -267,16 +271,18 @@ class EditFormPageTest(TestCase):
         '''
         Test that anonymous user cannot access edit profile page.
         '''
+        # Create a new client with no cookies
+        self.client = Client()
         response = self.client.get(self.url, follow=True)
 
-        self.assertEqual(response.status_code, 200)
-
         redirect_url, status_code = response.redirect_chain[0]
+
         self.assertEqual(status_code, 302)
         self.assertEqual(
             redirect_url,
             'http://testserver/login/?next=/edit_profile/'
         )
+        self.assertEqual(response.status_code, 200)
         self.assertContains(response, 'Sign In')
 
 

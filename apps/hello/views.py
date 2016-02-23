@@ -5,6 +5,7 @@ from jsrn.datetimeutil import to_ecma_date_string
 from django.http import HttpResponse, HttpResponseBadRequest
 from django.shortcuts import render
 from django.core import serializers
+from django.contrib.auth.decorators import login_required
 
 from .models import Profile, Request
 from .forms import ProfileForm
@@ -41,6 +42,7 @@ def requests(request):
         return render(request, 'hello/requests.html', {'requests': r_list})
 
 
+@login_required
 def edit_profile(request):
     profile = Profile.objects.first()
 
