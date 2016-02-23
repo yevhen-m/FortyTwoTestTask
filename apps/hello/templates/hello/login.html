@@ -8,7 +8,9 @@
 {% block content %}
 {{ block.super }}
 <form action="" method="post">
+    {% csrf_token %}
     {{ form.as_p }}
+    <div><p><input type="submit" value="Submit" /></p></div>
 </form>
 <br>
 <a href="{% url 'home' %}">Home</a>
