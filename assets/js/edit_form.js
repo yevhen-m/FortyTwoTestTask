@@ -27,6 +27,7 @@ $(document).ready(function() {
                         $input.closest('div').prepend('<p class="error">' + input_errors[i] + '</p>');
                     }
                 }
+                $inputs.removeAttr('disabled');
             }
         }
     );
