@@ -17,7 +17,11 @@ class HomePageTest(TestCase):
     def setUp(self):
         self.url = reverse('home')
 
-    def test_home_view(self):  # noqa
+    def test_home_view(self):
+        '''
+        Test that home page view works, renders the right template with
+        the right context and shows my profile data from db.
+        '''
         response = self.client.get(self.url)
 
         self.assertEqual(response.status_code, 200)
@@ -42,10 +46,21 @@ class HomePageTest(TestCase):
         # Assert index page is linked to requests page
         self.assertContains(response, reverse('requests'))
 
-    def test_home_page_is_linked_to_edit_profile_page(self):  # noqa
+    def test_home_page_is_linked_to_edit_profile_page(self):
+        '''
+        Test for a link to edit_profile page on the home page.
+        '''
         response = self.client.get(self.url)
 
         self.assertContains(response, reverse('edit_profile'))
+
+    def test_home_page_is_linked_to_edit_page(self):
+        '''
+        Test for a link to login page on the home page.
+        '''
+        response = self.client.get(self.url)
+
+        self.assertContains(response, reverse('login'))
 
 
 class RequestsPageTest(TestCase):
