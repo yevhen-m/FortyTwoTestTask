@@ -14,7 +14,8 @@
 <p>{{ profile.date_of_birth }}</p>
 <p>{{ profile.bio }}</p>
 <p>{{ profile.contact }}</p>
-<a href="{% url 'edit_profile' %}">Edit Profile</a>
 <br>
-<a href="/requests/">See requests</a>
+<a href="{% url 'edit_profile' %}">Edit Profile</a>
+<a href="{% url 'requests' %}">See requests</a>
+<a href="{% url 'login' %}">Login</a>
 {% endblock content %}
