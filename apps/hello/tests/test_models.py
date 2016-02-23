@@ -1,3 +1,4 @@
+from __future__ import division  # noqa
 import os
 import shutil
 from PIL import Image
@@ -69,8 +70,11 @@ class ProfileTest(TestCase):
         self.assertEqual(response.status_code, 200)
 
         profile = Profile.objects.get(name='Yevhen')
+        p = profile.photo
 
         self.assertEqual(
-            os.path.basename(profile.photo.name),
+            os.path.basename(p.name),
             'test_img.png'
         )
+        profile_img_size = (p.width, p.height)
+        self.assertEqual(max(profile_img_size), 200)
