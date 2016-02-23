@@ -12,7 +12,7 @@
 
 {% block content %}
 {{ block.super }}
-<form id="editForm" action="{% url 'edit_profile' %}" method="post">
+<form id="editForm" action="{% url 'edit_profile' %}" method="post" enctype="multipart/form-data">
     {% csrf_token %}
     <p id="status" style="display: none;"></p>
     <br>
