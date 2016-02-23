@@ -1,5 +1,6 @@
 from django.core.urlresolvers import reverse
 from django.test import TestCase
+from django.conf import settings
 
 from apps.hello.models import Request
 
@@ -9,11 +10,13 @@ class RequestsMiddlewareTest(TestCase):
     def setUp(self):
         self.url = reverse('home')
 
-    def test_middleware_is_registered_in_settings_module(self):  # noqa
-        from fortytwo_test_task.settings import MIDDLEWARE_CLASSES
+    def test_middleware_is_registered_in_settings_module(self):
+        '''
+        Test that my middleware class is registered in settings.py
+        '''
         self.assertIn(
             'apps.hello.middleware.RequestsMiddleware',
-            MIDDLEWARE_CLASSES
+            settings.MIDDLEWARE_CLASSES
         )
 
     def test_middleware_saves_requests(self):  # noqa
