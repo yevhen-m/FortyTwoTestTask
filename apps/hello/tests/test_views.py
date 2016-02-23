@@ -259,8 +259,10 @@ class EditFormPageTest(TestCase):
         try:
             errors = json.loads(response.content)
         except ValueError:
-            self.fail('edit_profile view returns invalid json data on '
-                      'bad post data')
+            self.fail(
+                'edit_profile view returns invalid json '
+                'data on bad post data'
+            )
         self.assertIn('name', errors)
         self.assertIn('surname', errors)
         self.assertIn('bio', errors)
@@ -286,6 +288,9 @@ class EditFormPageTest(TestCase):
         self.assertContains(response, 'Sign In')
 
     def test_custom_calendar_widget_on_the_edit_profile_page(self):
+        '''
+        Test that my calendar widget is present on the edit profile page.
+        '''
         response = self.client.get(self.url)
 
         self.assertContains(response, 'datepicker')
