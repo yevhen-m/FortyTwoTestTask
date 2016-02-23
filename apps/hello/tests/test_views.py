@@ -285,6 +285,11 @@ class EditFormPageTest(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, 'Sign In')
 
+    def test_custom_calendar_widget_on_the_edit_profile_page(self):
+        response = self.client.get(self.url)
+
+        self.assertContains(response, 'datepicker')
+
 
 class AuthPageTest(TestCase):
 
