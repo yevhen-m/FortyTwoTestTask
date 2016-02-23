@@ -1,4 +1,8 @@
+from PIL import Image
+
 from django.db import models
+
+PROFILE_PHOTO_SIZE = (200, 200)
 
 
 class Profile(models.Model):
@@ -8,6 +12,18 @@ class Profile(models.Model):
     bio = models.TextField()
     contact = models.EmailField()
     photo = models.ImageField(upload_to='images', blank=True, null=True)
+
+    def save(self, *args, **kwargs):
+        super(Profile, self).save(*args, **kwargs)
+
+        if self.photo.path:
+            image_path = self.photo.path
+            try:
+                image = Image.open(image_path)
+            except IOError:
+                return
+            image.thumbnail(PROFILE_PHOTO_SIZE, Image.ANTIALIAS)
+            image.save(image_path)
 
 
 class Request(models.Model):
