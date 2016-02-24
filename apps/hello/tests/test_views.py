@@ -158,6 +158,28 @@ class RequestsPageTest(TestCase):
         requests = json.loads(data['requests'])
         self.assertEqual(len(requests), 3)
 
+    def test_requests_view_shows_ten_most_recent_requests(self):
+        '''
+        Test requests view shows ten most recent requets.
+        '''
+        for _ in xrange(20):
+            self.client.get('home')
+        # this response is rendered with 10 previous requests
+        response = self.client.get(self.url)
+        context_requests = response.context['requests']
+
+        db_requests = Request.objects.all().order_by('-timestamp')
+        # Need to convert timestamps because I convert them for requests
+        # passed into the context
+        for db_request in db_requests:
+            db_request.timestamp = to_ecma_date_string(db_request.timestamp)
+
+        for context_request, db_request in zip(context_requests, db_requests):
+            self.assertEqual(
+                context_request.timestamp,
+                db_request.timestamp
+            )
+
 
 class EditFormPageTest(TestCase):
 
