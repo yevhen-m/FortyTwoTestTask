@@ -1,0 +1,18 @@
+{% extends 'hello/base.html' %}
+{% load staticfiles %}
+
+{% block title %}Sign In{% endblock title %}
+
+{% block heading %}Sign In{% endblock heading %}
+
+{% block content %}
+{{ block.super }}
+<form action="" method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <div><p><input type="submit" value="Submit" /></p></div>
+</form>
+<br>
+<a href="{% url 'home' %}">Home</a>
+{% endblock content %}
+

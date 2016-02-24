@@ -2,11 +2,13 @@ import json
 
 from jsrn.datetimeutil import to_ecma_date_string
 
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseBadRequest
 from django.shortcuts import render
 from django.core import serializers
+from django.contrib.auth.decorators import login_required
 
 from .models import Profile, Request
+from .forms import ProfileForm
 
 
 def home(request):
@@ -38,3 +40,22 @@ def requests(request):
             # Need to display data in this format
             r.timestamp = to_ecma_date_string(r.timestamp)
         return render(request, 'hello/requests.html', {'requests': r_list})
+
+
+@login_required
+def edit_profile(request):
+    profile = Profile.objects.first()
+
+    if request.method == 'POST':
+        form = ProfileForm(request.POST, request.FILES, instance=profile)
+        if form.is_valid():
+            form.save()
+            return HttpResponse('')
+        else:
+            return HttpResponseBadRequest(
+                json.dumps(form.errors),
+                content_type='application/json'
+            )
+    else:
+        form = ProfileForm(instance=profile)
+        return render(request, 'hello/edit_form.html', {'form': form})

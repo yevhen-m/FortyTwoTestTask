@@ -1,6 +1,9 @@
 {% extends 'hello/base.html' %}
 
 {% block title %}Hello Page{% endblock title %}
+{% block extrahead %}
+<script src="http://cdnjs.cloudflare.com/ajax/libs/jquery.form/3.51/jquery.form.min.js"></script>
+{% endblock extrahead %}
 
 {% block heading %}This is my Hello Page{% endblock heading %}
 
@@ -11,7 +14,11 @@
 <p>{{ profile.date_of_birth }}</p>
 <p>{{ profile.bio }}</p>
 <p>{{ profile.contact }}</p>
-
+{% if profile.photo.name %}
+<img src="{{ profile.photo.url }}">
+{% endif %}
 <br>
-<a href="/requests/">See requests</a>
+<a href="{% url 'edit_profile' %}">Edit Profile</a>
+<a href="{% url 'requests' %}">See requests</a>
+<a href="{% url 'login' %}">Login</a>
 {% endblock content %}

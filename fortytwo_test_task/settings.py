@@ -131,6 +131,12 @@ TEMPLATE_DIRS = (
 FIXTURE_DIRS = (
     os.path.join(BASE_DIR, 'apps', 'hello', 'fixtures'),
 )
+
 # Turn off south during test
 SOUTH_TESTS_MIGRATE = False
+
 TEST_RUNNER = 'rainbowtests.test.runner.RainbowDiscoverRunner'
+
+LOGIN_URL = 'login'
+
+LOGIN_REDIRECT_URL = 'home'

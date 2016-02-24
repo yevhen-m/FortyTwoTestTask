@@ -1,0 +1,32 @@
+{% extends 'hello/base.html' %}
+
+{% load staticfiles %}
+
+{% block title %}Edit Profile{% endblock title %}
+{% block heading %}Edit Your Profile{% endblock heading %}
+
+{% block extrahead %}
+{{ form.media }}
+<script src="http://cdnjs.cloudflare.com/ajax/libs/jquery.form/3.51/jquery.form.min.js"></script>
+<script src="{% static 'js/edit_form.js' %}"></script>
+<script src="{% static 'js/image_preview.js' %}"></script>
+{% endblock extrahead %}
+
+{% block content %}
+{{ block.super }}
+<form id="editForm" action="{% url 'edit_profile' %}" method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    <p id="status" style="display: none;"></p>
+    <br>
+    <div><p>{{ form.name.label_tag }} {{ form.name }}</p></div>
+    <div><p>{{ form.surname.label_tag }} {{ form.surname }}</p></div>
+    <div><p>{{ form.bio.label_tag }} {{ form.bio }}</p></div>
+    <div><p>{{ form.date_of_birth.label_tag }} {{ form.date_of_birth }}</p></div>
+    <div><p>{{ form.contact.label_tag }} {{ form.contact }}</p></div>
+    <div><p>{{ form.photo.label_tag }} {{ form.photo }}</p></div>
+    <img id="img_preview" src="#" alt="Your image" style="max-width: 200px; height: auto;"/>
+    <div><p><input type="submit" value="Submit" /></p></div>
+</form>
+<br>
+<a href="{% url 'home' %}">Home</a>
+{% endblock content %}
