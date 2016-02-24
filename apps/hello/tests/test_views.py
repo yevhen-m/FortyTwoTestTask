@@ -69,21 +69,23 @@ class RequestsPageTest(TestCase):
     def setUp(self):
         self.url = reverse('requests')
 
-        Request.objects.create(
-            method='GET',
-            path='/',
-            query=''
-        )
-        Request.objects.create(
-            method='GET',
-            path='/requests/',
-            query=''
-        )
-        Request.objects.create(
-            method='GET',
-            path='/',
-            query='?page=2'
-        )
+        # We need more than ten requests in for some tests
+        for _ in xrange(5):
+            Request.objects.create(
+                method='GET',
+                path='/',
+                query=''
+            )
+            Request.objects.create(
+                method='GET',
+                path='/requests/',
+                query=''
+            )
+            Request.objects.create(
+                method='GET',
+                path='/',
+                query='?page=2'
+            )
 
     def test_requests_view(self):
         '''
@@ -118,16 +120,16 @@ class RequestsPageTest(TestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertIn('requests', response.context)
-        self.assertContains(response, 'GET', count=3)
+        self.assertContains(response, 'GET', count=10)
         self.assertContains(response, '/requests/')
         self.assertContains(response, '?page=2')
         self.assertContains(response, r_display)
 
     def test_requests_view_limits_requests_on_the_page(self):
         '''
-        Test there are less-than-equal 10 requests on the page.
+        Test there are ten requests on the page.
         '''
-        for _ in xrange(15):
+        for _ in xrange(10):
             response = self.client.get(self.url)
 
         self.assertEqual(len(response.context['requests']), 10)
@@ -151,12 +153,12 @@ class RequestsPageTest(TestCase):
             self.fail('requests view does not return json response content')
 
         self.assertIn('new_requests', data)
-        self.assertEqual(data['new_requests'], 2)
+        self.assertEqual(data['new_requests'], 14)
         self.assertIn('requests', data)
         # data['requests'] is a serialized query set, so I need to
         # turn it into a list
         requests = json.loads(data['requests'])
-        self.assertEqual(len(requests), 3)
+        self.assertEqual(len(requests), 10)
 
     def test_requests_view_shows_ten_most_recent_requests(self):
         '''
