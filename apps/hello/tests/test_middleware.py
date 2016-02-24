@@ -19,7 +19,10 @@ class RequestsMiddlewareTest(TestCase):
             settings.MIDDLEWARE_CLASSES
         )
 
-    def test_middleware_saves_requests(self):  # noqa
+    def test_middleware_saves_requests(self):
+        '''
+        Test my middleware stores requests to db.
+        '''
         for _ in xrange(5):
             self.client.get(self.url)
 

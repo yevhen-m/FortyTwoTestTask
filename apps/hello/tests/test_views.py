@@ -85,7 +85,10 @@ class RequestsPageTest(TestCase):
             query='?page=2'
         )
 
-    def test_requests_view(self):  # noqa
+    def test_requests_view(self):
+        '''
+        Test my requests view works and uses right templates.
+        '''
         response = self.client.get(self.url)
 
         self.assertEqual(response.status_code, 200)
@@ -98,8 +101,11 @@ class RequestsPageTest(TestCase):
         # Assert requests page is linked to index page
         self.assertContains(response, reverse('home'))
 
-    @override_settings(MIDDLEWARE_CLASSES=())  # noqa
-    def test_requests_view_shows_data_from_db(self):  # noqa
+    @override_settings(MIDDLEWARE_CLASSES=())
+    def test_requests_view_shows_data_from_db(self):
+        '''
+        Test my requests view shows data from db on the page.
+        '''
         r = Request.objects.first()
         r_display = '{} {} {} {}'.format(
             r.method,
@@ -117,14 +123,21 @@ class RequestsPageTest(TestCase):
         self.assertContains(response, '?page=2')
         self.assertContains(response, r_display)
 
-    def test_requests_view_limits_requests_on_the_page(self):  # noqa
+    def test_requests_view_limits_requests_on_the_page(self):
+        '''
+        Test there are less-than-equal 10 requests on the page.
+        '''
         for _ in xrange(15):
             response = self.client.get(self.url)
 
         self.assertEqual(len(response.context['requests']), 10)
 
-    @override_settings(MIDDLEWARE_CLASSES=())  # noqa
-    def test_requests_view_handles_ajax_requests(self):  # noqa
+    @override_settings(MIDDLEWARE_CLASSES=())
+    def test_requests_view_handles_ajax_requests(self):
+        '''
+        Test requests view handles ajax requests, answers with a valid
+        json with the right data.
+        '''
         response = self.client.get(
             self.url,
             {'id': 1},
@@ -140,8 +153,8 @@ class RequestsPageTest(TestCase):
         self.assertIn('new_requests', data)
         self.assertEqual(data['new_requests'], 2)
         self.assertIn('requests', data)
-        # data['requests'] is a serialized query set, so I need to turn it into
-        # a list
+        # data['requests'] is a serialized query set, so I need to
+        # turn it into a list
         requests = json.loads(data['requests'])
         self.assertEqual(len(requests), 3)
 
