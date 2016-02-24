@@ -24,6 +24,8 @@ class CalendarWidget(forms.DateInput):
                 '{}: {}'.format(key, value) for key, value in
                 params.iteritems()
             )
+        else:
+            self.params_str = ''
 
     def render(self, name, value, attrs=None):
         rendered = super(CalendarWidget, self).render(
