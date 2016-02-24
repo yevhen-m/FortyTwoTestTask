@@ -1,21 +1,25 @@
 $(document).ready(function () {
     setInterval(function() {
-        updateRequests();
-    }, 3000);
+        getRequests();
+    }, 1000);
 
-    var focused = true;
     var title = document.title;
+    var data_received = true;
+    var focused = true;
     var recieved_data;
+    var new_requests;
 
     $(window).blur(function () {
         focused = false;
     });
-    $(window).focus(function () {
-        focused = true;
-        document.title = title;
-        // We haven't recived data yet
-        if (recieved_data === undefined) return;
 
+    $(window).focus(function () {
+        document.title = title;
+        focused = true;
+        new_requests = 0;
+    });
+
+    function updateRequests(recieved_data) {
         $('#requests').empty();
         for (var i = 0; i < recieved_data.length; i++) {
             var method = recieved_data[i].fields.method;
@@ -25,20 +29,36 @@ $(document).ready(function () {
             var id = recieved_data[i].pk;
             $('#requests').append('<p data-id="' + id + '">' + method + ' ' + path + ' ' + query + ' ' + timestamp + '</p>');
         }
-        });
+    }
 
-    function updateRequests() {
-        $.get(
-            '/requests/', {
+    function getRequests() {
+        if (!data_received) return;
+        // When we get data, so we want to ensure, that data has been recieved
+        // before we get it again
+        data_received = false;
+
+        $.ajax({
+            type: 'GET',
+            url: '/requests/',
+            data: {
                 'id': $('p').data('id'),
                 'store': false
             },
-            function(data) {
+            success: function(data) {
                 if (data.new_requests !== 0 && !focused) {
-                    document.title = '{' + data.new_requests + '} ' + title;
+                    // Increment new requests counter in the title of unfocused page
+                    new_requests += data.new_requests;
+                    document.title = '(' + new_requests + ') ' + title;
                 }
-                recieved_data = JSON.parse(data.requests);
+                var recieved_data = JSON.parse(data.requests);
+                // Update the page content with recieved requests
+                updateRequests(recieved_data);
+                // We can get more requests, cause we have updated the content of the page
+                data_received = true;
+            },
+            error: function() {
+                data_received = true;
             }
-        );
+        });
     }
 });
