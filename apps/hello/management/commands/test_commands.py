@@ -3,9 +3,6 @@ from django.test import TestCase
 from django.utils.six import StringIO
 from django.db import models
 
-from apps.hello.models import Profile, Request
-from django.contrib.auth.models import User
-
 
 class CountObjectsCommandTest(TestCase):
     fixtures = ['my_test_data.json']
@@ -16,18 +13,15 @@ class CountObjectsCommandTest(TestCase):
         to the console.
         '''
         out = StringIO()
+        err = StringIO()
 
-        call_command('count_objects', stdout=out)
+        call_command('count_objects', stdout=out, stderr=err)
 
-        result = out.getvalue()
+        result_out = out.getvalue()
+        result_err = err.getvalue()
 
-        profiles_number = Profile.objects.all().count()
-        requests_number = Request.objects.all().count()
-        users_number = User.objects.all().count()
-
-        self.assertIn('Profile: {}'.format(profiles_number), result)
-        self.assertIn('Request: {}'.format(requests_number), result)
-        self.assertIn('User: {}'.format(users_number), result)
-
-        for name in (m.__name__ for m in models.get_models()):
-            self.assertIn(name, result)
+        for name, number in (
+            (m.__name__, m.objects.count()) for m in models.get_models()
+        ):
+            self.assertIn('{}: {}'.format(name, number), result_out)
+            self.assertIn('error: {}: {}'.format(name, number), result_err)
