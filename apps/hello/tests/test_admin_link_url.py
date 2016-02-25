@@ -15,7 +15,8 @@ class AdminLinkUrlTagTest(TestCase):
 
         rendered = template.render(Context({'object': bob}))
 
+        link_html = '<a href="{}">Edit (admin)</a>'
         self.assertEqual(
             rendered,
-            reverse('admin:auth_user_change', args=(bob.pk,))
+            link_html.format(reverse('admin:auth_user_change', args=(bob.pk,)))
         )
