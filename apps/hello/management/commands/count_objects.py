@@ -9,6 +9,5 @@ class Command(NoArgsCommand):
     def handle_noargs(self, *args, **kwargs):
         for model in models.get_models():
             self.stdout.write(
-                '{}: {}'.format(model.__name__,
-                                model.objects.all().count())
+                '{}: {}'.format(model.__name__, model.objects.all().count())
             )
