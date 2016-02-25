@@ -6,7 +6,11 @@ from django.core.urlresolvers import reverse
 
 class AdminLinkUrlTagTest(TestCase):
 
-    def test_admin_link_url_tag_renders_to_the_right_link(self):
+    def test_admin_link_url_tag(self):
+        '''
+        Test that my custom tag is rendered to correct html when given
+        an object.
+        '''
         template = Template(
             '{% load my_tags %}'
             '{% admin_link_url object %}'
@@ -15,7 +19,7 @@ class AdminLinkUrlTagTest(TestCase):
 
         rendered = template.render(Context({'object': bob}))
 
-        link_html = '<a href="{}">Edit (admin)</a>'
+        link_html = '<a href="{}">Edit (admin)</a>\n'
         self.assertEqual(
             rendered,
             link_html.format(reverse('admin:auth_user_change', args=(bob.pk,)))
