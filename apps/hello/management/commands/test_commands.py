@@ -8,6 +8,10 @@ class CountObjectsCommandTest(TestCase):
     fixtures = ['my_test_data.json']
 
     def test_command_output(self):
+        '''
+        Test that my command prints number of all objects for all models
+        to the console.
+        '''
         out = StringIO()
 
         call_command('count_objects', stdout=out)
