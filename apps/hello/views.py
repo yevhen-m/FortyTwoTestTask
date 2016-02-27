@@ -21,7 +21,17 @@ def home(request):
 
 
 def requests(request):
-    r_list = Request.objects.all()[:10]
+    priority = request.GET.get('priority')
+    if priority is not None:
+        try:
+            priority = int(priority)
+        except (ValueError, TypeError):
+            priority = 1
+
+        order_by = '{}priority'.format('-' if priority else '')
+        r_list = Request.objects.all().order_by(order_by)[:10]
+    else:
+        r_list = Request.objects.all()[:10]
 
     if request.is_ajax():
         page_request_id = int(request.GET['id'])
