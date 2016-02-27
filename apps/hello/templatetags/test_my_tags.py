@@ -24,3 +24,8 @@ class AdminLinkUrlTagTest(TestCase):
             rendered,
             link_html.format(reverse('admin:auth_user_change', args=(bob.pk,)))
         )
+
+    def test_admin_link_url_tag_works_when_passed_none_as_argument(self):
+        response = self.client.get(reverse('home'))
+
+        self.assertEqual(response.status_code, 200)
