@@ -11,3 +11,8 @@ def object_created(sender, created, **kwargs):
             model=sender.__name__,
             action='created'
         )
+    elif sender is not DBAction:
+        DBAction.objects.create(
+            model=sender.__name__,
+            action='updated'
+        )
