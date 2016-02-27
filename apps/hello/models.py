@@ -36,3 +36,9 @@ class Request(models.Model):
 
     class Meta:
         ordering = ('-timestamp',)
+
+
+class DBAction(models.Model):
+    model = models.CharField(max_length=30)
+    action = models.CharField(max_length=30)
+    timestamp = models.DateTimeField(auto_now_add=True)
