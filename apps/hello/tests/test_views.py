@@ -80,6 +80,19 @@ class HomePageTest(TestCase):
 
 class RequestsPageTest(TestCase):
 
+    def send_ajax_request(self, data):
+        return self.client.get(
+            self.url,
+            data,
+            HTTP_X_REQUESTED_WITH='XMLHttpRequest'
+        )
+
+    def validate_recieved_json_response(self, response):
+        try:
+            return json.loads(response.content)
+        except ValueError:
+            self.fail('requests view does not return json response content')
+
     def setUp(self):
         self.url = reverse('requests')
 
@@ -156,17 +169,11 @@ class RequestsPageTest(TestCase):
         Test requests view handles ajax requests, answers with a valid
         json with the right data.
         '''
-        response = self.client.get(
-            self.url,
-            {'id': 1},
-            HTTP_X_REQUESTED_WITH='XMLHttpRequest'
-        )
+        response = self.send_ajax_request(dict(id=1))
 
         self.assertEqual(response.status_code, 200)
-        try:
-            data = json.loads(response.content)
-        except ValueError:
-            self.fail('requests view does not return json response content')
+
+        data = self.validate_recieved_json_response(response)
 
         self.assertIn('new_requests', data)
         self.assertEqual(data['new_requests'], 19)
@@ -223,6 +230,42 @@ class RequestsPageTest(TestCase):
 
         for r in requests:
             self.assertEqual(r.priority, 0)
+
+    @override_settings(MIDDLEWARE_CLASSES=())
+    def test_requests_view_handles_ajax_requests_with_priority_param(self):
+        '''
+        Test that requests view handles ajax requests with priority
+        param correctly and sends requests ordered first by priority and
+        then by timestamp.
+        '''
+        # Priority with value 1 == sort by priority descending
+        db_requests = Request.objects.all().order_by(
+            '-priority', '-timestamp')[:10]
+
+        for db_r in db_requests:
+            db_r.timestamp = to_ecma_date_string(db_r.timestamp)
+
+        response = self.send_ajax_request(dict(id=1, priority=1))
+
+        data = self.validate_recieved_json_response(response)
+
+        requests = json.loads(data['requests'])
+        for r, db_r in zip(requests, db_requests):
+            self.assertEqual(r['fields']['timestamp'], db_r.timestamp)
+
+        db_requests = Request.objects.all().order_by(
+            'priority', '-timestamp')[:10]
+
+        for db_r in db_requests:
+            db_r.timestamp = to_ecma_date_string(db_r.timestamp)
+
+        response = self.send_ajax_request(dict(id=1, priority=0))
+
+        data = self.validate_recieved_json_response(response)
+
+        requests = json.loads(data['requests'])
+        for r, db_r in zip(requests, db_requests):
+            self.assertEqual(r['fields']['timestamp'], db_r.timestamp)
 
 
 class EditFormPageTest(TestCase):
