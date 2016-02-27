@@ -10,10 +10,8 @@ class Command(NoArgsCommand):
         out_str = '{}: {}'
         err_str = 'error: {}: {}'
 
-        for model in models.get_models():
-            self.stdout.write(
-                out_str.format(model.__name__, model.objects.count())
-            )
-            self.stderr.write(
-                err_str.format(model.__name__, model.objects.count())
-            )
+        for name, number in (
+                (m.__name__, m.objects.count()) for m in models.get_models()
+        ):
+            self.stdout.write(out_str.format(name, number))
+            self.stderr.write(err_str.format(name, number))
