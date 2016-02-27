@@ -24,11 +24,15 @@ class RequestsMiddlewareTest(TestCase):
         Test my middleware stores requests to db.
         '''
         for _ in xrange(5):
-            self.client.get(self.url)
+            self.client.get(self.url, dict(name='John'))
 
         requests = Request.objects.all()
 
         self.assertEqual(requests.count(), 5)
+        for r in requests:
+            self.assertEqual(r.query, 'name=John')
+            self.assertEqual(r.path, reverse('home'))
+            self.assertEqual(r.method, 'GET')
 
     def test_middleware_does_not_save_ajax_requests(self):
         '''
