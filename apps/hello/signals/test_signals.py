@@ -13,7 +13,7 @@ class SignalTest(TestCase):
         '''
         timestamp = datetime.datetime.now()
 
-        Request.objects.create(
+        request = Request.objects.create(
             method='GET',
             path='/',
             query='',
@@ -24,3 +24,11 @@ class SignalTest(TestCase):
 
         self.assertEqual(db_action.model, 'Request')
         self.assertEqual(db_action.action, 'created')
+
+        request.method = 'POST'
+        request.save()
+
+        db_action = DBAction.objects.last()
+
+        self.assertEqual(db_action.model, 'Request')
+        self.assertEqual(db_action.action, 'updated')
