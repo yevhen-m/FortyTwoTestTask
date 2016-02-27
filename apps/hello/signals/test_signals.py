@@ -22,7 +22,5 @@ class SignalTest(TestCase):
 
         db_action = DBAction.objects.last()
 
-        self.assertEqual(db_action.method, 'GET')
-        self.assertEqual(db_action.path, '/')
-        self.assertEqual(db_action.query, '')
-        self.assertEqual(db_action.timestamp, timestamp)
+        self.assertEqual(db_action.model, 'Request')
+        self.assertEqual(db_action.action, 'created')
