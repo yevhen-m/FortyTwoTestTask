@@ -13,5 +13,5 @@ class RequestsMiddleware(object):
             Request.objects.create(
                 method=request.method,
                 path=request.path,
-                query=request.META.get('query_string', '')
+                query=request.META.get('QUERY_STRING', '')
             )
