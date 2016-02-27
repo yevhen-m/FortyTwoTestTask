@@ -49,3 +49,22 @@ class SignalTest(TestCase):
 
         self.assertEqual(db_action.model, 'Request')
         self.assertEqual(db_action.action, 'deleted')
+
+    def test_my_signal_handlers_do_not_save_data_about_themselves(self):
+        '''
+        Test that my handlers don't save data about DBAction objects.
+        '''
+        DBAction.objects.create(
+            model=DBAction.__name__,
+            action='test_created',
+        )
+        db_action1, db_action2 = DBAction.objects.all().order_by(
+            '-timestamp')[:2]
+
+        # db_action1 should be DBAction object created in this test
+        self.assertEqual(db_action1.model, DBAction.__name__)
+        self.assertEqual(db_action1.action, 'test_created')
+
+        # db_action2 object is for Request creation in setUp method
+        self.assertEqual(db_action2.model, Request.__name__)
+        self.assertEqual(db_action2.action, 'created')
