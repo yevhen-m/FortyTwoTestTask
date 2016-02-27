@@ -88,17 +88,28 @@ class RequestsPageTest(TestCase):
             Request.objects.create(
                 method='GET',
                 path='/',
-                query=''
+                query='?page=2',
+                priority=1
+            )
+        for _ in xrange(5):
+            Request.objects.create(
+                method='GET',
+                path='/',
+                query='',
+                priority=0
             )
             Request.objects.create(
                 method='GET',
                 path='/requests/',
-                query=''
+                query='',
+                priority=0
             )
+        for _ in xrange(5):
             Request.objects.create(
                 method='GET',
                 path='/',
-                query='?page=2'
+                query='?page=2',
+                priority=1
             )
 
     def test_requests_view(self):
@@ -167,7 +178,7 @@ class RequestsPageTest(TestCase):
             self.fail('requests view does not return json response content')
 
         self.assertIn('new_requests', data)
-        self.assertEqual(data['new_requests'], 14)
+        self.assertEqual(data['new_requests'], 19)
         self.assertIn('requests', data)
         # data['requests'] is a serialized query set, so I need to
         # turn it into a list
@@ -195,6 +206,32 @@ class RequestsPageTest(TestCase):
                 context_request.timestamp,
                 db_request.timestamp
             )
+
+    @override_settings(MIDDLEWARE_CLASSES=())
+    def test_requests_view_handles_priority_get_param(self):
+        '''
+        Test that requests are sorted by priority if there is
+        priority=1 in request get params.
+        '''
+        # Get requests ordered by priority descending
+        response = self.client.get(self.url, {'priority': 1})
+
+        self.assertEqual(response.status_code, 200)
+
+        requests = response.context['requests']
+
+        for r in requests:
+            self.assertEqual(r.priority, 1)
+
+        # Get requests ordered by priority ascending
+        response = self.client.get(self.url, {'priority': 0})
+
+        self.assertEqual(response.status_code, 200)
+
+        requests = response.context['requests']
+
+        for r in requests:
+            self.assertEqual(r.priority, 0)
 
 
 class EditFormPageTest(TestCase):
