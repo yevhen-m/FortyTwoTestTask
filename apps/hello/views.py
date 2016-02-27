@@ -29,7 +29,7 @@ def requests(request):
             priority = 1
 
         order_by = '{}priority'.format('-' if priority else '')
-        r_list = Request.objects.all().order_by(order_by)[:10]
+        r_list = Request.objects.all().order_by(order_by, '-timestamp')[:10]
     else:
         r_list = Request.objects.all()[:10]
 
