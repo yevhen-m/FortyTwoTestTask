@@ -68,8 +68,10 @@ class HomePageTest(TestCase):
         Test that there is a link to admin edit page on the home page.
         '''
         profile = Profile.objects.get(name='Yevhen')
-        response = self.client.get(self.url)
+        self.assertIsNotNone(profile)
 
+        response = self.client.get(self.url)
+        self.assertContains(response, 'Yevhen')
         self.assertContains(
             response,
             reverse('admin:hello_profile_change', args=(profile.pk,))

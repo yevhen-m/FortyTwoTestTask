@@ -26,6 +26,9 @@ class AdminLinkUrlTagTest(TestCase):
         )
 
     def test_admin_link_url_tag_works_when_passed_none_as_argument(self):
+        '''
+        Test that my tag handles None as its argument.
+        '''
         response = self.client.get(reverse('home'))
 
         self.assertEqual(response.status_code, 200)
