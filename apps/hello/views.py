@@ -49,7 +49,8 @@ def requests(request):
         for r in r_list:
             # Need to display data in this format
             r.timestamp = to_ecma_date_string(r.timestamp)
-        return render(request, 'hello/requests.html', {'requests': r_list})
+        return render(request, 'hello/requests.html', {'requests': r_list,
+                                                       'priority': priority})
 
 
 @login_required

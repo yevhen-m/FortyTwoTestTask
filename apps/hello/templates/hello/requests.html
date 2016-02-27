@@ -18,7 +18,15 @@
             <th>Path</th>
             <th>Query</th>
             <th>Timestamp</th>
-            <th>Priority</th>
+            <th>
+                <a href="{% url 'requests' %}?priority={% if priority != 1 %}1{% else %}0{% endif %}">Priority
+                    {% if priority == 0 %}
+                    &darr;
+                    {% elif priority == 1 %}
+                    &uarr;
+                    {% endif %}
+                </a>
+            </th>
         </tr>
     </thead>
     <tbody id="requests_table">
