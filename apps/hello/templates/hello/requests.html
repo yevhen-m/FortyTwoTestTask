@@ -11,11 +11,28 @@
 
 {% block content %}
 {{ block.super }}
-<div id="requests">
-    {% for r in requests %}
-    <p data-id="{{ r.id }}">{{ r.method }} {{ r.path }} {{ r.query }} {{ r.timestamp }}</p>
-    {% endfor %}
-</div>
+<table>
+    <thead>
+        <tr>
+            <th>Method</th>
+            <th>Path</th>
+            <th>Query</th>
+            <th>Timestamp</th>
+            <th>Priority</th>
+        </tr>
+    </thead>
+    <tbody id="requests_table">
+        {% for r in requests %}
+        <tr class="request" data-id="{{ r.id }}">
+            <td>{{ r.method }}</td>
+            <td>{{ r.path }}</td>
+            <td>{{ r.query }}</td>
+            <td>{{ r.timestamp }}</td>
+            <td>{{ r.priotity }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
 <br>
 <a href="{% url 'home' %}">Home</a>
 {% endblock content %}

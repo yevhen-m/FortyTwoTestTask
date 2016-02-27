@@ -133,14 +133,6 @@ class RequestsPageTest(TestCase):
         '''
         Test my requests view shows data from db on the page.
         '''
-        r = Request.objects.first()
-        r_display = '{} {} {} {}'.format(
-            r.method,
-            r.path,
-            r.query,
-            to_ecma_date_string(r.timestamp)
-        )
-
         response = self.client.get(self.url)
 
         self.assertEqual(response.status_code, 200)
@@ -148,7 +140,6 @@ class RequestsPageTest(TestCase):
         self.assertContains(response, 'GET', count=10)
         self.assertContains(response, '/requests/')
         self.assertContains(response, '?page=2')
-        self.assertContains(response, r_display)
 
     def test_requests_view_limits_requests_on_the_page(self):
         '''

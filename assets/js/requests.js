@@ -20,14 +20,23 @@ $(document).ready(function () {
     });
 
     function updateRequests(recieved_data) {
-        $('#requests').empty();
+        $('#requests_table').empty();
+
         for (var i = 0; i < recieved_data.length; i++) {
             var method = recieved_data[i].fields.method;
             var path = recieved_data[i].fields.path;
             var query = recieved_data[i].fields.query;
             var timestamp = recieved_data[i].fields.timestamp;
+            var priority = recieved_data[i].fields.priority;
             var id = recieved_data[i].pk;
             $('#requests').append('<p data-id="' + id + '">' + method + ' ' + path + ' ' + query + ' ' + timestamp + '</p>');
+            $('#requests_table').append('<tr class="request" data-id="' + id + '">' +
+                                        '<td>' + method + '</td>' +
+                                            '<td>' + path + '</td>' +
+                                                '<td>' + query + '</td>' +
+                                                    '<td>' + timestamp + '</td>' +
+                                                        '<td>' + priority + '</td>' +
+                                                            '</tr>');
         }
     }
 
@@ -41,7 +50,7 @@ $(document).ready(function () {
             type: 'GET',
             url: '/requests/',
             data: {
-                'id': $('p').data('id'),
+                'id': $('tr.request').data('id'),
                 'store': false
             },
             success: function(data) {
