@@ -33,6 +33,7 @@ class Request(models.Model):
     path = models.CharField(max_length=300)
     query = models.CharField(max_length=300)
     timestamp = models.DateTimeField(auto_now_add=True)
+    priority = models.IntegerField(default=1)
 
     class Meta:
         ordering = ('-timestamp',)
