@@ -10,7 +10,10 @@ class Profile(models.Model):
     surname = models.CharField(max_length=30)
     date_of_birth = models.DateField()
     bio = models.TextField()
-    contact = models.EmailField()
+    email = models.EmailField()
+    skype = models.CharField(max_length=30)
+    jabber = models.EmailField()
+    other_contacts = models.TextField()
     photo = models.ImageField(upload_to='images', blank=True, null=True)
 
     def save(self, *args, **kwargs):
