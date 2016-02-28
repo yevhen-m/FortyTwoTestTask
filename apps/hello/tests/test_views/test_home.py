@@ -13,10 +13,30 @@ class HomePageTest(TestCase):
 
     def setUp(self):
         self.url = reverse('home')
+        Profile.objects.create(
+            name='Yevhen',
+            surname='Malov',
+            date_of_birth=datetime.date.today(),
+            bio='My bio',
+            email='mail@mail.com',
+            skype='skype_id',
+            jabber='jabber@jabber.com',
+            other_contacts='Other contacts'
+        )
+        Profile.objects.create(
+            name='John',
+            surname='Snow',
+            date_of_birth=datetime.date.today(),
+            bio='Snow bio',
+            email='john.snow@mail.com',
+            skype='john.snow',
+            jabber='john.snow@jabber.com',
+            other_contacts='Other contacts'
+        )
 
     def test_home_view(self):
         '''
-        Test that home page view works, renders the right template with
+        Test home page view works, renders the right template with
         the right context and shows my profile data from db.
         '''
         response = self.client.get(self.url)
@@ -28,7 +48,7 @@ class HomePageTest(TestCase):
         )
         self.assertIn('profile', response.context)
 
-        profile = Profile.objects.get(name='Yevhen')
+        profile = Profile.objects.filter(name='Yevhen')[0]
         c = response.context
 
         self.assertIsInstance(c['profile'], Profile)
@@ -40,6 +60,11 @@ class HomePageTest(TestCase):
         self.assertContains(response, 'My bio')
         self.assertContains(response, 'yvhn.yvhn@gmail.com')
 
+    def test_home_page_is_linked_to_requests_page(self):
+        '''
+        Test home page has a link to requests page.
+        '''
+        response = self.client.get(self.url)
         # Assert index page is linked to requests page
         self.assertContains(response, reverse('requests'))
 
@@ -58,34 +83,6 @@ class HomePageTest(TestCase):
         '''
         Test that my home page works with different profiles in db.
         '''
-        Profile.objects.create(
-            name='John',
-            surname='Snow',
-            date_of_birth=datetime.date.today(),
-            bio='Snow bio',
-            email='john.snow@mail.com',
-            skype='john.snow',
-            jabber='john.snow@jabber.com',
-            other_contacts='Other contacts'
-        )
-
-        response = self.client.get(self.url)
-
-        self.assertEqual(response.status_code, 200)
-        self.assertContains(response, 'Yevhen')
-
-        profile_data = dict(
-            name='Yevhen',
-            surname='Malov',
-            date_of_birth=datetime.date.today(),
-            bio='My bio',
-            email='mail@mail.com',
-            skype='skype_id',
-            jabber='jabber@jabber.com',
-            other_contacts='Other contacts'
-        )
-        Profile.objects.create(**profile_data)
-        Profile.objects.create(**profile_data)
 
         response = self.client.get(self.url)
 
@@ -96,7 +93,7 @@ class HomePageTest(TestCase):
         '''
         Test that home page shows cyrrillic data in the profile.
         '''
-        p = Profile.objects.get(name='Yevhen')
+        p = Profile.objects.filter(name='Yevhen')[0]
         p.skype = 'Скайп'
         p.save()
 
@@ -125,8 +122,7 @@ class HomePageTest(TestCase):
         '''
         Test that there is a link to admin edit page on the home page.
         '''
-        profile = Profile.objects.get(name='Yevhen')
-        self.assertIsNotNone(profile)
+        profile = Profile.objects.filter(name='Yevhen')[0]
 
         response = self.client.get(self.url)
         self.assertContains(response, 'Yevhen')

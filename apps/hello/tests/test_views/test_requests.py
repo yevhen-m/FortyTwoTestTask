@@ -35,7 +35,6 @@ class RequestsPageTest(TestCase):
                 query='?page=2',
                 priority=1
             )
-        for _ in xrange(5):
             Request.objects.create(
                 method='GET',
                 path='/',
@@ -48,7 +47,6 @@ class RequestsPageTest(TestCase):
                 query='',
                 priority=0
             )
-        for _ in xrange(5):
             Request.objects.create(
                 method='GET',
                 path='/',
@@ -58,7 +56,7 @@ class RequestsPageTest(TestCase):
 
     def test_requests_view(self):
         '''
-        Test my requests view works and uses right templates.
+        Test requests view works and uses right templates.
         '''
         response = self.client.get(self.url)
 
@@ -75,7 +73,7 @@ class RequestsPageTest(TestCase):
     @override_settings(MIDDLEWARE_CLASSES=())
     def test_requests_view_shows_data_from_db(self):
         '''
-        Test my requests view shows data from db on the page.
+        Test requests view gets data from db and shows it on the page.
         '''
         response = self.client.get(self.url)
 
@@ -85,34 +83,14 @@ class RequestsPageTest(TestCase):
         self.assertContains(response, '/requests/')
         self.assertContains(response, '?page=2')
 
-    def test_requests_view_limits_requests_on_the_page(self):
+    def test_requests_view_limits_requests_number_on_the_page(self):
         '''
-        Test there are ten requests on the page.
+        Test there are only ten requests on the page.
         '''
         for _ in xrange(10):
             response = self.client.get(self.url)
 
         self.assertEqual(len(response.context['requests']), 10)
-
-    @override_settings(MIDDLEWARE_CLASSES=())
-    def test_requests_view_handles_ajax_requests(self):
-        '''
-        Test requests view handles ajax requests, answers with a valid
-        json with the right data.
-        '''
-        response = self.send_ajax_request(dict(id=1))
-
-        self.assertEqual(response.status_code, 200)
-
-        data = self.validate_recieved_json_response(response)
-
-        self.assertIn('new_requests', data)
-        self.assertEqual(data['new_requests'], 19)
-        self.assertIn('requests', data)
-        # data['requests'] is a serialized query set, so I need to
-        # turn it into a list
-        requests = json.loads(data['requests'])
-        self.assertEqual(len(requests), 10)
 
     def test_requests_view_shows_ten_most_recent_requests(self):
         '''
@@ -135,6 +113,26 @@ class RequestsPageTest(TestCase):
                 context_request.timestamp,
                 db_request.timestamp
             )
+
+    @override_settings(MIDDLEWARE_CLASSES=())
+    def test_requests_view_handles_ajax_requests(self):
+        '''
+        Test requests view returns valid json with right data to ajax
+        requests.
+        '''
+        response = self.send_ajax_request(dict(id=1))
+
+        self.assertEqual(response.status_code, 200)
+
+        data = self.validate_recieved_json_response(response)
+
+        self.assertIn('new_requests', data)
+        self.assertEqual(data['new_requests'], 19)
+        self.assertIn('requests', data)
+        # data['requests'] is a serialized query set, so I need to
+        # turn it into a list
+        requests = json.loads(data['requests'])
+        self.assertEqual(len(requests), 10)
 
     @override_settings(MIDDLEWARE_CLASSES=())
     def test_requests_view_handles_priority_get_param(self):
@@ -165,7 +163,7 @@ class RequestsPageTest(TestCase):
     @override_settings(MIDDLEWARE_CLASSES=())
     def test_requests_view_handles_ajax_requests_with_priority_param(self):
         '''
-        Test that requests view handles ajax requests with priority
+        Test requests view handles ajax requests with priority
         param correctly and sends requests ordered first by priority and
         then by timestamp.
         '''

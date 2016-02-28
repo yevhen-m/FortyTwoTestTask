@@ -30,8 +30,8 @@ class EditFormPageTest(TestCase):
 
     def test_edit_form_view_displays_form(self):
         '''
-        Test that edit form view works, renders the right templates,
-        and the response page contains the form.
+        Test edit form view works, renders the right templates,
+        and response page contains the form.
         '''
         response = self.client.get(self.url)
 
@@ -49,7 +49,7 @@ class EditFormPageTest(TestCase):
 
     def test_edit_profile_page_is_linked_to_home_page(self):
         '''
-        Test that edit profile page has a link to the home page.
+        Test edit profile page has a link to the home page.
         '''
         response = self.client.get(self.url)
 
@@ -59,7 +59,7 @@ class EditFormPageTest(TestCase):
 
     def test_edit_profile_view_renders_template_with_a_form(self):
         '''
-        Test that edit_profiel form renders the template with a
+        Test edit_profile view renders the template with a
         ProfileForm form.
         '''
         response = self.client.get(self.url)
@@ -73,12 +73,11 @@ class EditFormPageTest(TestCase):
         Test that edit profile form is initially populated with
         profile data from db.
         '''
+        profile = Profile.objects.get(name='John')
+
         response = self.client.get(self.url)
 
         self.assertEqual(response.status_code, 200)
-
-        profile = Profile.objects.get(name='John')
-
         self.assertContains(response, profile.name)
         self.assertContains(response, profile.surname)
         self.assertContains(response, profile.email)
@@ -88,6 +87,8 @@ class EditFormPageTest(TestCase):
         Test that edit profile view updates the profile with recieved
         post data, and stores updated profile to db.
         '''
+        profile_before_post = Profile.objects.get(name='John')
+
         response = self.client.post(
             self.url,
             dict(
@@ -104,13 +105,18 @@ class EditFormPageTest(TestCase):
         )
         self.assertEqual(response.status_code, 200)
 
-        profile = Profile.objects.get(name='John')
-        self.assertEqual(profile.surname, 'Doe')
-        self.assertEqual(profile.email, 'john.doe@mail.com')
+        profile_after_post = Profile.objects.get(name='John')
+
+        self.assertNotEqual(profile_after_post.surname,
+                            profile_before_post.surname)
+        self.assertNotEqual(profile_after_post.email,
+                            profile_before_post.email)
+        self.assertEqual(profile_after_post.surname, 'Doe')
+        self.assertEqual(profile_after_post.email, 'john.doe@mail.com')
 
     def test_edit_profile_view_handles_posts_with_bad_data(self):
         '''
-        Test that edit profile view handles invalid recieved post data
+        Test edit profile view handles invalid recieved post data
         and sends form errors to the client.
         '''
         response = self.client.post(
@@ -125,6 +131,7 @@ class EditFormPageTest(TestCase):
             HTTP_X_REQUESTED_WITH='XMLHttpRequest'
         )
         self.assertEqual(response.status_code, 400)
+
         try:
             errors = json.loads(response.content)
         except ValueError:
@@ -144,6 +151,7 @@ class EditFormPageTest(TestCase):
         '''
         # Create a new client with no cookies
         self.client = Client()
+
         response = self.client.get(self.url, follow=True)
 
         redirect_url, status_code = response.redirect_chain[0]
