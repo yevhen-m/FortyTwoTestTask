@@ -58,6 +58,41 @@ class HomePageTest(TestCase):
 
         self.assertEqual(response.status_code, 200)
 
+    def test_home_page_works_with_two_profiles_in_db(self):
+        Profile.objects.create(
+            name='John',
+            surname='Snow',
+            date_of_birth=datetime.date.today(),
+            bio='Snow bio',
+            email='john.snow@mail.com',
+            skype='john.snow',
+            jabber='john.snow@jabber.com',
+            other_contacts='Other contacts'
+        )
+
+        response = self.client.get(self.url)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'Yevhen')
+
+        profile_data = dict(
+            name='Yevhen',
+            surname='Malov',
+            date_of_birth=datetime.date.today(),
+            bio='My bio',
+            email='mail@mail.com',
+            skype='skype_id',
+            jabber='jabber@jabber.com',
+            other_contacts='Other contacts'
+        )
+        Profile.objects.create(**profile_data)
+        Profile.objects.create(**profile_data)
+
+        response = self.client.get(self.url)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'Yevhen')
+
     def test_home_page_is_linked_to_edit_profile_page(self):
         '''
         Test for a link to edit_profile page on the home page.
