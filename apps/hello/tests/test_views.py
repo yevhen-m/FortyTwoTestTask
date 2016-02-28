@@ -1,3 +1,5 @@
+# coding: utf-8
+
 import datetime
 import json
 
@@ -95,6 +97,19 @@ class HomePageTest(TestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, 'Yevhen')
+
+    def test_home_page_correctly_works_with_cyrillics(self):
+        '''
+        Test that home page shows cyrrillic data in the profile.
+        '''
+        p = Profile.objects.get(name='Yevhen')
+        p.skype = 'Скайп'
+        p.save()
+
+        response = self.client.get(self.url)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'Скайп')
 
     def test_home_page_is_linked_to_edit_profile_page(self):
         '''

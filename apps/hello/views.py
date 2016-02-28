@@ -13,7 +13,7 @@ from .forms import ProfileForm
 
 def home(request):
     try:
-        profile = Profile.objects.filter(name='Yevhen', surname='Malov')[0]
+        profile = Profile.objects.filter(name='Yevhen')[0]
     except IndexError:
         profile = None
 
