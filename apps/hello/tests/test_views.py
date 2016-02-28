@@ -47,6 +47,17 @@ class HomePageTest(TestCase):
         # Assert index page is linked to requests page
         self.assertContains(response, reverse('requests'))
 
+    def test_home_page_works_with_no_profiles_in_db(self):
+        '''
+        Test that my page works, when there are no profiles in the
+        database.
+        '''
+        Profile.objects.all().delete()
+
+        response = self.client.get(self.url)
+
+        self.assertEqual(response.status_code, 200)
+
     def test_home_page_is_linked_to_edit_profile_page(self):
         '''
         Test for a link to edit_profile page on the home page.
@@ -279,9 +290,12 @@ class EditFormPageTest(TestCase):
         Profile.objects.create(
             name='John',
             surname='Snow',
-            bio='',
+            bio='Bio',
             date_of_birth=datetime.date.today(),
-            contact='john.snow@mail.com'
+            email='john.snow@mail.com',
+            skype='john.snow',
+            jabber='john@jabber.com',
+            other_contacts='Other contact'
         )
 
     def test_edit_form_view_displays_form(self):
@@ -301,7 +315,7 @@ class EditFormPageTest(TestCase):
         self.assertContains(response, 'name="surname"')
         self.assertContains(response, 'name="date_of_birth"')
         self.assertContains(response, 'name="bio"')
-        self.assertContains(response, 'name="contact"')
+        self.assertContains(response, 'name="email"')
 
     def test_edit_profile_page_is_linked_to_home_page(self):
         '''
@@ -337,7 +351,7 @@ class EditFormPageTest(TestCase):
 
         self.assertContains(response, profile.name)
         self.assertContains(response, profile.surname)
-        self.assertContains(response, profile.contact)
+        self.assertContains(response, profile.email)
 
     def test_edit_profile_view_handles_ajax_post_requests(self):
         '''
@@ -351,7 +365,10 @@ class EditFormPageTest(TestCase):
                 surname='Doe',
                 bio='Bio',
                 date_of_birth='2016-02-18',
-                contact='john.doe@mail.com'
+                email='john.doe@mail.com',
+                jabber='john@jabber.com',
+                skype='john.snow',
+                other_contacts='Other contacts'
             ),
             HTTP_X_REQUESTED_WITH='XMLHttpRequest'
         )
@@ -359,7 +376,7 @@ class EditFormPageTest(TestCase):
 
         profile = Profile.objects.get(name='John')
         self.assertEqual(profile.surname, 'Doe')
-        self.assertEqual(profile.contact, 'john.doe@mail.com')
+        self.assertEqual(profile.email, 'john.doe@mail.com')
 
     def test_edit_profile_view_handles_posts_with_bad_data(self):
         '''
@@ -373,7 +390,7 @@ class EditFormPageTest(TestCase):
                 surname='',
                 bio='',
                 date_of_birth='',
-                contact=''
+                email=''
             ),
             HTTP_X_REQUESTED_WITH='XMLHttpRequest'
         )
@@ -388,7 +405,7 @@ class EditFormPageTest(TestCase):
         self.assertIn('name', errors)
         self.assertIn('surname', errors)
         self.assertIn('bio', errors)
-        self.assertIn('contact', errors)
+        self.assertIn('email', errors)
         self.assertIn('date_of_birth', errors)
 
     def test_access_to_edit_profile_page(self):
