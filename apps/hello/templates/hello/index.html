@@ -10,22 +10,21 @@
 
 {% block content %}
 {{ block.super }}
-<div style="width: 400px; float: left;">
+<div style="width: 400px; float: left; margin-bottom: 30px;">
     <p>Name <strong>{{ profile.name }}</strong></p>
     <p>Surname <strong>{{ profile.surname }}</strong></p>
     <p>Date of birth <strong>{{ profile.date_of_birth }}</strong></p>
     <p>Email <strong>{{ profile.email }}</strong></p>
     <p>Skype <strong>{{ profile.skype }}</strong></p>
     <p>Jabber <strong>{{ profile.jabber }}</strong></p>
+    <div style="width: 350px;">Bio <strong>{{ profile.bio }}</strong></div>
 </div>
-<div style="float: left;">
-    <p>Other contacts <strong>{{ profile.other_contact }}</strong></p>
-    <p>Bio <strong>{{ profile.bio }}</strong></p>
+<div style="float: left; margin-bottom: 30px;">
+    <div style="width: 400px;">Other contacts <strong>{{ profile.other_contacts }}</strong></div>
     {% if profile.photo.name %}
     <p>Photo <img src="{{ profile.photo.url }}"></p>
     {% endif %}
 </div>
-<br>
 <div style="clear: both;">
     <a href="{% url 'edit_profile' %}">Edit Profile</a>
     <a href="{% url 'requests' %}">See requests</a>
