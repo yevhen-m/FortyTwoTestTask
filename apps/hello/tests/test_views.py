@@ -59,6 +59,9 @@ class HomePageTest(TestCase):
         self.assertEqual(response.status_code, 200)
 
     def test_home_page_works_with_two_profiles_in_db(self):
+        '''
+        Test that my home page works with different profiles in db.
+        '''
         Profile.objects.create(
             name='John',
             surname='Snow',

@@ -13,8 +13,8 @@ from .forms import ProfileForm
 
 def home(request):
     try:
-        profile = Profile.objects.get(name='Yevhen')
-    except Profile.DoesNotExist:
+        profile = Profile.objects.filter(name='Yevhen', surname='Malov')[0]
+    except IndexError:
         profile = None
 
     return render(request, 'hello/index.html', {'profile': profile})
