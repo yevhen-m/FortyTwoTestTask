@@ -10,17 +10,26 @@
 
 {% block content %}
 {{ block.super }}
-<p>{{ profile.name }}</p>
-<p>{{ profile.surname }}</p>
-<p>{{ profile.date_of_birth }}</p>
-<p>{{ profile.bio }}</p>
-<p>{{ profile.contact }}</p>
-{% if profile.photo.name %}
-<img src="{{ profile.photo.url }}">
-{% endif %}
+<div style="width: 400px; float: left;">
+    <p>Name <strong>{{ profile.name }}</strong></p>
+    <p>Surname <strong>{{ profile.surname }}</strong></p>
+    <p>Date of birth <strong>{{ profile.date_of_birth }}</strong></p>
+    <p>Email <strong>{{ profile.email }}</strong></p>
+    <p>Skype <strong>{{ profile.skype }}</strong></p>
+    <p>Jabber <strong>{{ profile.jabber }}</strong></p>
+</div>
+<div style="float: left;">
+    <p>Other contacts <strong>{{ profile.other_contact }}</strong></p>
+    <p>Bio <strong>{{ profile.bio }}</strong></p>
+    {% if profile.photo.name %}
+    <p>Photo <img src="{{ profile.photo.url }}"></p>
+    {% endif %}
+</div>
 <br>
-<a href="{% url 'edit_profile' %}">Edit Profile</a>
-<a href="{% url 'requests' %}">See requests</a>
-<a href="{% url 'login' %}">Login</a>
-{% admin_link_url profile %}
+<div style="clear: both;">
+    <a href="{% url 'edit_profile' %}">Edit Profile</a>
+    <a href="{% url 'requests' %}">See requests</a>
+    <a href="{% url 'login' %}">Login</a>
+    {% admin_link_url profile %}
+</div>
 {% endblock content %}
