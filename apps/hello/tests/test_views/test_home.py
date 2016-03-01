@@ -13,6 +13,7 @@ class HomePageTest(TestCase):
 
     def setUp(self):
         self.url = reverse('home')
+
         Profile.objects.create(
             name='Yevhen',
             surname='Malov',
@@ -48,17 +49,16 @@ class HomePageTest(TestCase):
         )
         self.assertIn('profile', response.context)
 
-        profile = Profile.objects.filter(name='Yevhen')[0]
-        c = response.context
+        db_profile = Profile.objects.first()
+        context_profile = response.context['profile']
 
-        self.assertIsInstance(c['profile'], Profile)
-        self.assertEqual(c['profile'].name, profile.name)
-        self.assertEqual(c['profile'].surname, profile.surname)
-
-        self.assertContains(response, 'Yevhen')
-        self.assertContains(response, 'Malov')
-        self.assertContains(response, 'My bio')
-        self.assertContains(response, 'yvhn.yvhn@gmail.com')
+        self.assertIsInstance(context_profile, Profile)
+        for attr in ('name', 'surname', 'date_of_birth', 'bio', 'email',
+                     'skype', 'jabber', 'other_contacts', 'photo'):
+            self.assertEqual(
+                getattr(context_profile, attr),
+                getattr(db_profile, attr)
+            )
 
     def test_home_page_is_linked_to_requests_page(self):
         '''
@@ -70,8 +70,7 @@ class HomePageTest(TestCase):
 
     def test_home_page_works_with_no_profiles_in_db(self):
         '''
-        Test that my page works, when there are no profiles in the
-        database.
+        Test that my page works with no profile in db.
         '''
         Profile.objects.all().delete()
 
@@ -79,28 +78,26 @@ class HomePageTest(TestCase):
 
         self.assertEqual(response.status_code, 200)
 
-    def test_home_page_works_with_two_profiles_in_db(self):
-        '''
-        Test that my home page works with different profiles in db.
-        '''
-
-        response = self.client.get(self.url)
-
-        self.assertEqual(response.status_code, 200)
-        self.assertContains(response, 'Yevhen')
-
     def test_home_page_correctly_works_with_cyrillics(self):
         '''
-        Test that home page shows cyrrillic data in the profile.
+        Test that cyrillic text is successfully stored in db and shown
+        on the page.
         '''
-        p = Profile.objects.filter(name='Yevhen')[0]
-        p.skype = 'Скайп'
+        p = Profile.objects.first()
+        p.name = u'Мій'
+        p.surname = u'Тест'
+        p.skype = u'Скайп'
         p.save()
 
         response = self.client.get(self.url)
 
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, 'Скайп')
+        for attr in ('name', 'surname', 'skype'):
+            self.assertEqual(
+                getattr(response.context['profile'], attr),
+                getattr(p, attr)
+            )
+            self.assertContains(response, getattr(p, attr))
 
     def test_home_page_is_linked_to_edit_profile_page(self):
         '''
@@ -122,11 +119,41 @@ class HomePageTest(TestCase):
         '''
         Test that there is a link to admin edit page on the home page.
         '''
-        profile = Profile.objects.filter(name='Yevhen')[0]
+        profile = Profile.objects.first()
 
         response = self.client.get(self.url)
-        self.assertContains(response, 'Yevhen')
         self.assertContains(
             response,
             reverse('admin:hello_profile_change', args=(profile.pk,))
         )
+
+    def test_data_from_db_is_shown(self):
+        '''
+        Test that data show on the page is taken from db and is not
+        hardcoded into the html page.
+        '''
+        profile = Profile.objects.first()
+
+        response = self.client.get(self.url)
+
+        self.assertEqual(
+            response.context['profile'].name,
+            profile.name
+        )
+        self.assertContains(response, profile.name)
+
+        name, surname = profile.name, profile.surname
+
+        profile.name = 'Jill'
+        profile.surname = 'White'
+        profile.save()
+
+        self.assertNotEqual(name, profile.name)
+        self.assertNotEqual(surname, profile.surname)
+
+        response = self.client.get(self.url)
+
+        self.assertEqual(response.context['profile'].name, 'Jill')
+        self.assertEqual(response.context['profile'].surname, 'White')
+        self.assertContains(response, 'Jill')
+        self.assertContains(response, 'White')

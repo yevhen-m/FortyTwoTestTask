@@ -12,10 +12,7 @@ from .forms import ProfileForm
 
 
 def home(request):
-    try:
-        profile = Profile.objects.filter(name='Yevhen')[0]
-    except IndexError:
-        profile = None
+    profile = Profile.objects.first()
 
     return render(request, 'hello/index.html', {'profile': profile})
 
