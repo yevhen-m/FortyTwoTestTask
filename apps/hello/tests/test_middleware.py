@@ -39,15 +39,7 @@ class RequestsMiddlewareTest(TestCase):
         Test that middleware ignores ajax requests with query string
         `?store=false`.
         '''
-        # Request model is ordered my timestamp descending
-        for _ in xrange(12):
-            Request.objects.create(
-                method='GET',
-                path='/',
-                query=''
-            )
-
-        newest_request_id_before_ajax_request = Request.objects.first().id
+        self.assertEqual(Request.objects.count(), 0)
 
         self.client.get(
             self.url,
@@ -55,9 +47,4 @@ class RequestsMiddlewareTest(TestCase):
             HTTP_X_REQUESTED_WITH='XMLHttpRequest'
         )
 
-        newest_request_id_after_ajax_request = Request.objects.first().id
-
-        self.assertEqual(
-            newest_request_id_before_ajax_request,
-            newest_request_id_after_ajax_request
-        )
+        self.assertEqual(Request.objects.count(), 0)
