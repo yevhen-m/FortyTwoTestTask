@@ -195,3 +195,13 @@ class RequestsPageTest(TestCase):
         requests = json.loads(data['requests'])
         for r, db_r in zip(requests, db_requests):
             self.assertEqual(r['fields']['timestamp'], db_r.timestamp)
+
+    def test_requests_view_works_with_empty_db(self):
+        '''
+        Test that requests page works with no requests in db.
+        '''
+        Request.objects.all().delete()
+
+        response = self.client.get(self.url)
+
+        self.assertEqual(response.status_code, 200)
