@@ -3,6 +3,7 @@
 import datetime
 
 from django.test import TestCase
+from django.template import Template, Context
 from django.core.urlresolvers import reverse
 
 from apps.hello.models import Profile
@@ -38,7 +39,7 @@ class HomePageTest(TestCase):
     def test_home_view(self):
         '''
         Test home page view works, renders the right template with
-        the right context and shows my profile data from db.
+        the right context and shows all profile data from db.
         '''
         response = self.client.get(self.url)
 
@@ -53,12 +54,32 @@ class HomePageTest(TestCase):
         context_profile = response.context['profile']
 
         self.assertIsInstance(context_profile, Profile)
-        for attr in ('name', 'surname', 'date_of_birth', 'bio', 'email',
-                     'skype', 'jabber', 'other_contacts', 'photo'):
+
+        fields = [
+            'name',
+            'surname',
+            'date_of_birth',
+            'bio',
+            'email',
+            'skype',
+            'jabber',
+            'other_contacts',
+            'photo'
+        ]
+        for field in fields:
             self.assertEqual(
-                getattr(context_profile, attr),
-                getattr(db_profile, attr)
+                getattr(context_profile, field),
+                getattr(db_profile, field)
             )
+            if field == 'date_of_birth':
+                continue
+
+            self.assertContains(response, getattr(db_profile, field))
+
+        rendered_date_of_birth = Template('{{ date_of_birth }}').render(
+            Context({'date_of_birth': db_profile.date_of_birth})
+        )
+        self.assertContains(response, rendered_date_of_birth)
 
     def test_home_page_is_linked_to_requests_page(self):
         '''
