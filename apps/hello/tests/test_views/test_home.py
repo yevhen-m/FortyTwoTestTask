@@ -178,3 +178,13 @@ class HomePageTest(TestCase):
         self.assertEqual(response.context['profile'].surname, 'White')
         self.assertContains(response, 'Jill')
         self.assertContains(response, 'White')
+
+    def test_home_page_view_works_with_two_profiles_in_db(self):
+        '''
+        Test home page works with two and more profile in db.
+        '''
+        self.assertGreaterEqual(Profile.objects.count(), 2)
+
+        response = self.client.get(self.url)
+
+        self.assertEqual(response.status_code, 200)
