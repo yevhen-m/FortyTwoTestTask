@@ -1,47 +1,23 @@
 import os
 import json
-import datetime
-from StringIO import StringIO
 
-from PIL import Image
-
-from django.conf import settings
-from django.test import TestCase, Client
+from django.test import Client
 from django.core.urlresolvers import reverse
-from django.contrib.auth.models import User
 from django.test.utils import override_settings
 
 from apps.hello.models import Profile
 from apps.hello.forms import ProfileForm
 
+from ..base_testcase import BaseTestCase
 
-class EditFormPageTest(TestCase):
 
-    test_media_root = os.path.join(settings.BASE_DIR, '..', 'test_uploads')
-
-    def send_post_ajax_request(self, data):
-        return self.client.post(
-            self.url,
-            data,
-            HTTP_X_REQUESTED_WITH='XMLHttpRequest'
-        )
+class EditFormPageTest(BaseTestCase):
+    fixtures = ['myfixture.json']
 
     def setUp(self):
         self.url = reverse('edit_profile')
 
-        User.objects.create_user('test', password='test')
-        self.client.login(username='test', password='test')
-
-        Profile.objects.create(
-            name='John',
-            surname='Snow',
-            bio='Bio',
-            date_of_birth=datetime.date.today(),
-            email='john.snow@mail.com',
-            skype='john.snow',
-            jabber='john@jabber.com',
-            other_contacts='Other contact'
-        )
+        self.client.login(username='admin', password='admin')
 
     def test_edit_form_view_displays_form(self):
         '''
@@ -55,12 +31,23 @@ class EditFormPageTest(TestCase):
             [t.name for t in response.templates],
             ['hello/edit_form.html', 'hello/base.html']
         )
+
         self.assertContains(response, 'editForm')
-        self.assertContains(response, 'name="name"')
-        self.assertContains(response, 'name="surname"')
-        self.assertContains(response, 'name="date_of_birth"')
-        self.assertContains(response, 'name="bio"')
-        self.assertContains(response, 'name="email"')
+        for form_field in (
+                'name',
+                'surname',
+                'date_of_birth',
+                'bio',
+                'email',
+                'jabber',
+                'skype',
+                'other_contacts',
+                'photo'
+        ):
+            self.assertContains(
+                response,
+                'name="{}"'.format(form_field)
+            )
 
     def test_edit_profile_page_is_linked_to_home_page(self):
         '''
@@ -88,7 +75,7 @@ class EditFormPageTest(TestCase):
         Test that edit profile form is initially populated with
         profile data from db.
         '''
-        profile = Profile.objects.get(name='John')
+        profile = Profile.objects.first()
 
         response = self.client.get(self.url)
 
@@ -102,36 +89,43 @@ class EditFormPageTest(TestCase):
         Test that edit profile view updates the profile with recieved
         post data, and stores updated profile to db.
         '''
-        profile_before_post = Profile.objects.get(name='John')
+        profile_before_post = Profile.objects.first()
 
-        response = self.send_post_ajax_request(dict(
+        data = dict(
             name='John',
             surname='Doe',
             bio='Bio',
-            date_of_birth='2016-02-18',
+            date_of_birth='2006-02-18',
             email='john.doe@mail.com',
             jabber='john@jabber.com',
             skype='john.snow',
-            other_contacts='Other contacts'
-        ))
+            other_contacts='John Doe Contacts'
+        )
+        response = self.send_ajax_post_request(data)
 
         self.assertEqual(response.status_code, 200)
 
-        profile_after_post = Profile.objects.get(name='John')
+        profile_after_post = Profile.objects.first()
 
-        self.assertNotEqual(profile_after_post.surname,
-                            profile_before_post.surname)
-        self.assertNotEqual(profile_after_post.email,
-                            profile_before_post.email)
-        self.assertEqual(profile_after_post.surname, 'Doe')
-        self.assertEqual(profile_after_post.email, 'john.doe@mail.com')
+        for field in data:
+            self.assertNotEqual(
+                getattr(profile_after_post, field),
+                getattr(profile_before_post, field)
+            )
+            if field == 'date_of_birth':
+                continue
+
+            self.assertEqual(
+                getattr(profile_after_post, field),
+                data[field]
+            )
 
     def test_edit_profile_view_handles_posts_with_bad_data(self):
         '''
         Test edit profile view handles invalid recieved post data
         and sends form errors to the client.
         '''
-        response = self.send_post_ajax_request(dict(
+        response = self.send_ajax_post_request(dict(
             name='',
             surname='',
             bio='',
@@ -181,18 +175,7 @@ class EditFormPageTest(TestCase):
 
         self.assertContains(response, 'datepicker')
 
-    @staticmethod
-    def _get_image(name, size):
-        file_obj = StringIO()
-        file_obj.name = name
-
-        img = Image.new('L', size=size)
-        img.save(file_obj, 'png')
-
-        file_obj.seek(0)
-        return file_obj
-
-    @override_settings(MEDIA_ROOT=test_media_root)
+    @override_settings(MEDIA_ROOT=BaseTestCase.test_media_root)
     def test_ajax_requests_upload_images_successfully(self):
         '''
         Test that images are uploaded and saved by ajax requests.
@@ -203,12 +186,12 @@ class EditFormPageTest(TestCase):
 
         initial_form_data = response.context['form'].initial
         initial_form_data.update(
-            photo=self._get_image('test_img.png', (444, 444))
+            photo=self._create_image('test_img.png', (444, 444))
         )
 
         profile_photo_before_post_request = Profile.objects.first().photo
 
-        response = self.send_post_ajax_request(initial_form_data)
+        response = self.send_ajax_post_request(initial_form_data)
 
         self.assertEqual(response.status_code, 200)
 
