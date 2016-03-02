@@ -18,17 +18,22 @@
     {% csrf_token %}
     <p id="status" style="display: none;"></p>
     <br>
-    <div><p>{{ form.name.label_tag }} {{ form.name }}</p></div>
-    <div><p>{{ form.surname.label_tag }} {{ form.surname }}</p></div>
-    <div><p>{{ form.bio.label_tag }} {{ form.bio }}</p></div>
-    <div><p>{{ form.date_of_birth.label_tag }} {{ form.date_of_birth }}</p></div>
-    <div><p>{{ form.email.label_tag }} {{ form.email }}</p></div>
-    <div><p>{{ form.skype.label_tag }} {{ form.skype }}</p></div>
-    <div><p>{{ form.jabber.label_tag }} {{ form.jabber }}</p></div>
-    <div><p>{{ form.other_contacts.label_tag }} {{ form.other_contacts }}</p></div>
-    <div><p>{{ form.photo.label_tag }} {{ form.photo }}</p></div>
-    <img id="img_preview" src="" alt="Your image" style="max-width: 200px; height: auto;"/>
-    <div><p><input type="submit" value="Submit" /></p></div>
+    <div style="width: 400px; float: left; margin-bottom: 30px;">
+        <div><p>{{ form.name.label_tag }}<br> {{ form.name }}</p></div>
+        <div><p>{{ form.surname.label_tag }}<br> {{ form.surname }}</p></div>
+        <div><p>{{ form.date_of_birth.label_tag }}<br> {{ form.date_of_birth }}</p></div>
+        <div><p>{{ form.photo.label_tag }}<br> {{ form.photo }}</p></div>
+        <img id="img_preview" src="" alt="Your image" style="max-width: 200px; height: auto;"/>
+    </div>
+
+    <div style="float: left; margin-bottom: 30px;">
+        <div><p>{{ form.email.label_tag }}<br> {{ form.email }}</p></div>
+        <div><p>{{ form.skype.label_tag }}<br> {{ form.skype }}</p></div>
+        <div><p>{{ form.jabber.label_tag }}<br> {{ form.jabber }}</p></div>
+        <div><p>{{ form.bio.label_tag }}<br> {{ form.bio }}</p></div>
+        <div><p>{{ form.other_contacts.label_tag }}<br> {{ form.other_contacts }}</p></div>
+    </div>
+    <div style="clear: both;"><p><input type="submit" value="Submit" /></p></div>
 </form>
 <br>
 <a href="{% url 'home' %}">Home</a>
