@@ -1,15 +1,30 @@
+import os
 import json
 import datetime
+from StringIO import StringIO
 
+from PIL import Image
+
+from django.conf import settings
 from django.test import TestCase, Client
 from django.core.urlresolvers import reverse
 from django.contrib.auth.models import User
+from django.test.utils import override_settings
 
 from apps.hello.models import Profile
 from apps.hello.forms import ProfileForm
 
 
 class EditFormPageTest(TestCase):
+
+    test_media_root = os.path.join(settings.BASE_DIR, '..', 'test_uploads')
+
+    def send_post_ajax_request(self, data):
+        return self.client.post(
+            self.url,
+            data,
+            HTTP_X_REQUESTED_WITH='XMLHttpRequest'
+        )
 
     def setUp(self):
         self.url = reverse('edit_profile')
@@ -89,20 +104,17 @@ class EditFormPageTest(TestCase):
         '''
         profile_before_post = Profile.objects.get(name='John')
 
-        response = self.client.post(
-            self.url,
-            dict(
-                name='John',
-                surname='Doe',
-                bio='Bio',
-                date_of_birth='2016-02-18',
-                email='john.doe@mail.com',
-                jabber='john@jabber.com',
-                skype='john.snow',
-                other_contacts='Other contacts'
-            ),
-            HTTP_X_REQUESTED_WITH='XMLHttpRequest'
-        )
+        response = self.send_post_ajax_request(dict(
+            name='John',
+            surname='Doe',
+            bio='Bio',
+            date_of_birth='2016-02-18',
+            email='john.doe@mail.com',
+            jabber='john@jabber.com',
+            skype='john.snow',
+            other_contacts='Other contacts'
+        ))
+
         self.assertEqual(response.status_code, 200)
 
         profile_after_post = Profile.objects.get(name='John')
@@ -119,17 +131,14 @@ class EditFormPageTest(TestCase):
         Test edit profile view handles invalid recieved post data
         and sends form errors to the client.
         '''
-        response = self.client.post(
-            self.url,
-            dict(
-                name='',
-                surname='',
-                bio='',
-                date_of_birth='',
-                email=''
-            ),
-            HTTP_X_REQUESTED_WITH='XMLHttpRequest'
-        )
+        response = self.send_post_ajax_request(dict(
+            name='',
+            surname='',
+            bio='',
+            date_of_birth='',
+            email=''
+        ))
+
         self.assertEqual(response.status_code, 400)
 
         try:
@@ -171,3 +180,45 @@ class EditFormPageTest(TestCase):
         response = self.client.get(self.url)
 
         self.assertContains(response, 'datepicker')
+
+    @staticmethod
+    def _get_image(name, size):
+        file_obj = StringIO()
+        file_obj.name = name
+
+        img = Image.new('L', size=size)
+        img.save(file_obj, 'png')
+
+        file_obj.seek(0)
+        return file_obj
+
+    @override_settings(MEDIA_ROOT=test_media_root)
+    def test_ajax_requests_upload_images_successfully(self):
+        '''
+        Test that images are uploaded and saved by ajax requests.
+        '''
+        self.client.login(username='admin', password='admin')
+
+        response = self.client.get(self.url)
+
+        initial_form_data = response.context['form'].initial
+        initial_form_data.update(
+            photo=self._get_image('test_img.png', (444, 444))
+        )
+
+        profile_photo_before_post_request = Profile.objects.first().photo
+
+        response = self.send_post_ajax_request(initial_form_data)
+
+        self.assertEqual(response.status_code, 200)
+
+        profile = Profile.objects.first()
+
+        self.assertNotEqual(
+            profile.photo,
+            profile_photo_before_post_request
+        )
+        self.assertEqual(
+            os.path.basename(profile.photo.name),
+            'test_img.png'
+        )

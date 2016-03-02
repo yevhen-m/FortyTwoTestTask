@@ -42,25 +42,31 @@ class ProfileTest(TestCase):
     def tearDown(self):
         shutil.rmtree(self.test_media_root)
 
+    @staticmethod
+    def _create_image(name, size):
+        file_obj = StringIO()
+        file_obj.name = name
+
+        img = Image.new('L', size=size)
+        img.save(file_obj, 'png')
+
+        file_obj.seek(0)
+        return file_obj
+
     @override_settings(MEDIA_ROOT=test_media_root)
     def test_uploaded_images_are_resized_properly(self):
         '''
         Test that uploaded form edit profile form page images are
         resized properly on the server side.
         '''
-        file_obj = StringIO()
-        file_obj.name = 'test_img.png'
-
-        img = Image.new('L', size=(444, 444))
-        img.save(file_obj, 'png')
-
-        file_obj.seek(0)
-
         self.client.login(username='admin', password='admin')
 
         response = self.client.get(self.url)
+
         initial_form_data = response.context['form'].initial
-        initial_form_data.update(photo=file_obj)
+        initial_form_data.update(
+            photo=self._create_image('test_img.png', (444, 444))
+        )
 
         response = self.client.post(
             self.url,
@@ -69,12 +75,6 @@ class ProfileTest(TestCase):
         )
         self.assertEqual(response.status_code, 200)
 
-        profile = Profile.objects.get(name='Yevhen')
-        p = profile.photo
+        profile = Profile.objects.first()
 
-        self.assertEqual(
-            os.path.basename(p.name),
-            'test_img.png'
-        )
-        profile_img_size = (p.width, p.height)
-        self.assertEqual(max(profile_img_size), 200)
+        self.assertEqual(max(profile.photo.width, profile.photo.height), 200)
