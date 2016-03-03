@@ -36,6 +36,18 @@ class HomePageTest(TestCase):
             other_contacts='Other contacts'
         )
 
+        self.profile_fields = [
+            'name',
+            'surname',
+            'date_of_birth',
+            'bio',
+            'email',
+            'skype',
+            'jabber',
+            'other_contacts',
+            'photo'
+        ]
+
     def test_home_view(self):
         '''
         Test home page view works, renders the right template with
@@ -55,18 +67,7 @@ class HomePageTest(TestCase):
 
         self.assertIsInstance(context_profile, Profile)
 
-        fields = [
-            'name',
-            'surname',
-            'date_of_birth',
-            'bio',
-            'email',
-            'skype',
-            'jabber',
-            'other_contacts',
-            'photo'
-        ]
-        for field in fields:
+        for field in self.profile_fields:
             self.assertEqual(
                 getattr(context_profile, field),
                 getattr(db_profile, field)
@@ -157,20 +158,9 @@ class HomePageTest(TestCase):
 
         response = self.client.get(self.url)
 
-        fields = [
-            'name',
-            'surname',
-            'date_of_birth',
-            'bio',
-            'email',
-            'skype',
-            'jabber',
-            'other_contacts',
-            'photo'
-        ]
-        old_values = [getattr(profile, field) for field in fields]
+        old_values = [getattr(profile, field) for field in self.profile_fields]
 
-        for field in fields:
+        for field in self.profile_fields:
             new_value = 'NEW_VALUE'
 
             if field == 'date_of_birth':
@@ -180,25 +170,35 @@ class HomePageTest(TestCase):
 
         profile.save()
 
-        new_values = [getattr(profile, field) for field in fields]
+        new_values = [getattr(profile, field) for field in self.profile_fields]
 
         for old, new in zip(old_values, new_values):
             self.assertNotEqual(old, new)
 
         response = self.client.get(self.url)
 
-        for field, new in zip(fields, new_values):
+        for field, new in zip(self.profile_fields, new_values):
             self.assertEqual(
                 getattr(response.context['profile'], field),
                 new
             )
 
-    def test_home_page_view_works_with_two_profiles_in_db(self):
+    def test_second_profile_from_db_is_shown(self):
         '''
-        Test home page works with two and more profile in db.
+        Test second profile is shown is we delete the first.
         '''
         self.assertGreaterEqual(Profile.objects.count(), 2)
+
+        Profile.objects.first().delete()
+
+        another_profile = Profile.objects.first()
 
         response = self.client.get(self.url)
 
         self.assertEqual(response.status_code, 200)
+
+        for field in self.profile_fields:
+            self.assertEqual(
+                getattr(response.context['profile'], field),
+                getattr(another_profile, field)
+            )
