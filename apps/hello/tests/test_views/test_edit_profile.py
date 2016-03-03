@@ -105,7 +105,7 @@ class EditFormPageTest(BaseTestCase):
         data = dict(
             name='John',
             surname='Doe',
-            bio='Bio',
+            bio='John Doe Bio',
             date_of_birth='2006-02-18',
             email='john.doe@mail.com',
             jabber='john@jabber.com',
