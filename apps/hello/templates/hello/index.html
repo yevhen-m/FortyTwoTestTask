@@ -17,10 +17,10 @@
     <p>Email <strong>{{ profile.email }}</strong></p>
     <p>Skype <strong>{{ profile.skype }}</strong></p>
     <p>Jabber <strong>{{ profile.jabber }}</strong></p>
-    <div style="width: 350px;">Bio <strong><pre>{{ profile.bio }}</pre></strong></div>
+    <div style="width: 350px;">Bio <strong><pre style="white-space: pre-wrap">{{ profile.bio }}</pre></strong></div>
 </div>
-<div style="float: left; margin-bottom: 30px;">
-    <p>Other contacts <strong><pre>{{ profile.other_contacts }}</pre></strong></p>
+<div style="float: left; margin-bottom: 30px; width: 400px;">
+    <p>Other contacts <strong><pre style="white-space: pre-wrap">{{ profile.other_contacts }}</pre></strong></p>
     {% if profile.photo.name %}
     <p>Photo<br> <img src="{{ profile.photo.url }}"></p>
     {% endif %}
