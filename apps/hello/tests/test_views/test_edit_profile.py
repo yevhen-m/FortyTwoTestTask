@@ -19,6 +19,18 @@ class EditFormPageTest(BaseTestCase):
 
         self.client.login(username='admin', password='admin')
 
+        self.profile_fields = [
+            'name',
+            'surname',
+            'date_of_birth',
+            'bio',
+            'email',
+            'jabber',
+            'skype',
+            'other_contacts',
+            'photo'
+        ]
+
     def test_edit_form_view_displays_form(self):
         '''
         Test edit form view works, renders the right templates,
@@ -33,17 +45,7 @@ class EditFormPageTest(BaseTestCase):
         )
 
         self.assertContains(response, 'editForm')
-        for form_field in (
-                'name',
-                'surname',
-                'date_of_birth',
-                'bio',
-                'email',
-                'jabber',
-                'skype',
-                'other_contacts',
-                'photo'
-        ):
+        for form_field in self.profile_fields:
             self.assertContains(
                 response,
                 'name="{}"'.format(form_field)
@@ -70,7 +72,7 @@ class EditFormPageTest(BaseTestCase):
         self.assertIn('form', response.context)
         self.assertIsInstance(response.context['form'], ProfileForm)
 
-    def test_edit_profile_view_populates_form_with_profile_data(self):
+    def test_edit_profile_view_shows_form_with_profile_data(self):
         '''
         Test that edit profile form is initially populated with
         profile data from db.
@@ -80,9 +82,18 @@ class EditFormPageTest(BaseTestCase):
         response = self.client.get(self.url)
 
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, profile.name)
-        self.assertContains(response, profile.surname)
-        self.assertContains(response, profile.email)
+
+        initial_data = response.context['form'].initial
+
+        for field in self.profile_fields:
+            self.assertEqual(
+                initial_data[field],
+                getattr(profile, field)
+            )
+            if field == 'date_of_birth':
+                continue
+
+            self.assertContains(response, getattr(profile, field))
 
     def test_edit_profile_view_handles_ajax_post_requests(self):
         '''
