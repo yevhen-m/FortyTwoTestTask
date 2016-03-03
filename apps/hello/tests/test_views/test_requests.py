@@ -83,15 +83,6 @@ class RequestsPageTest(TestCase):
         self.assertContains(response, '/requests/')
         self.assertContains(response, '?page=2')
 
-    def test_requests_view_limits_requests_number_on_the_page(self):
-        '''
-        Test there are only ten requests on the page.
-        '''
-        for _ in xrange(10):
-            response = self.client.get(self.url)
-
-        self.assertEqual(len(response.context['requests']), 10)
-
     def test_requests_view_shows_ten_most_recent_requests(self):
         '''
         Test requests view shows ten most recent requets.
@@ -101,6 +92,8 @@ class RequestsPageTest(TestCase):
         # this response is rendered with 10 previous requests
         response = self.client.get(self.url)
         context_requests = response.context['requests']
+
+        self.assertEqual(len(context_requests), 10)
 
         db_requests = Request.objects.all().order_by('-timestamp')
         # Need to convert timestamps because I convert them for requests
@@ -113,6 +106,7 @@ class RequestsPageTest(TestCase):
                 context_request.timestamp,
                 db_request.timestamp
             )
+            self.assertEqual(context_request.id, db_request.id)
 
     @override_settings(MIDDLEWARE_CLASSES=())
     def test_requests_view_handles_ajax_requests(self):
