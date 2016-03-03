@@ -157,27 +157,41 @@ class HomePageTest(TestCase):
 
         response = self.client.get(self.url)
 
-        self.assertEqual(
-            response.context['profile'].name,
-            profile.name
-        )
-        self.assertContains(response, profile.name)
+        fields = [
+            'name',
+            'surname',
+            'date_of_birth',
+            'bio',
+            'email',
+            'skype',
+            'jabber',
+            'other_contacts',
+            'photo'
+        ]
+        old_values = [getattr(profile, field) for field in fields]
 
-        name, surname = profile.name, profile.surname
+        for field in fields:
+            new_value = 'NEW_VALUE'
 
-        profile.name = 'Jill'
-        profile.surname = 'White'
+            if field == 'date_of_birth':
+                new_value = datetime.date(1999, 1, 1)
+
+            setattr(profile, field, new_value)
+
         profile.save()
 
-        self.assertNotEqual(name, profile.name)
-        self.assertNotEqual(surname, profile.surname)
+        new_values = [getattr(profile, field) for field in fields]
+
+        for old, new in zip(old_values, new_values):
+            self.assertNotEqual(old, new)
 
         response = self.client.get(self.url)
 
-        self.assertEqual(response.context['profile'].name, 'Jill')
-        self.assertEqual(response.context['profile'].surname, 'White')
-        self.assertContains(response, 'Jill')
-        self.assertContains(response, 'White')
+        for field, new in zip(fields, new_values):
+            self.assertEqual(
+                getattr(response.context['profile'], field),
+                new
+            )
 
     def test_home_page_view_works_with_two_profiles_in_db(self):
         '''
