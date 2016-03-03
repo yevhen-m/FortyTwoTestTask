@@ -10,10 +10,6 @@ from django.contrib.auth.decorators import login_required
 from .models import Profile, Request
 from .forms import ProfileForm
 
-# This import has to be here, so my signal handlers don't cause syncdb
-# to fail
-import signals.handlers  # noqa
-
 
 def home(request):
     profile = Profile.objects.first()
