@@ -1,1 +1,6 @@
- 
+.info-section {
+  float: left;
+  margin-bottom: 30px;
+  width: 400px;
+}
+
